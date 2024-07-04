@@ -9,9 +9,10 @@ Limerick poem assistant by OpenAI's ChatGPT and generative art by DALL-E:
 ### Screenshots
 
 <p align="center">
-  <img height="400" alt="Screen Shot 2024-04-14 at 2 48 18 PM" src="https://github.com/desmat/haiku/assets/3298837/ce69d37a-cc0f-4bed-9146-c31b35121aa0">
-  <img height="400" alt="Screen Shot 2024-04-16 at 10 23 09 AM" src="https://github.com/desmat/haiku/assets/3298837/40cc18b4-0294-4da2-85f2-c661ee33fbb7">
-  <img height="400" alt="Screen Shot 2024-03-25 at 3 04 30 PM" src="https://github.com/desmat/haiku/assets/3298837/1f5711f6-44ff-4a5f-bb29-560cb8ad10f7">
+  <img width="400" alt="Screen Shot 2024-07-04 at 12 09 12 PM" src="https://github.com/desmat/limerick/assets/3298837/f6e98366-55a1-4e0e-8895-a0d6bc39b04b">
+  <img width="400" alt="Screen Shot 2024-07-04 at 12 06 02 PM" src="https://github.com/desmat/limerick/assets/3298837/e809a40e-8eaf-4a06-a19c-16b403fec793">
+  <img width="400" alt="Screen Shot 2024-07-04 at 12 08 23 PM" src="https://github.com/desmat/limerick/assets/3298837/4e9b128f-0817-4699-974f-2fb020f7b94a">
+  <img width="400" alt="Screen Shot 2024-07-04 at 12 03 56 PM" src="https://github.com/desmat/limerick/assets/3298837/3b466afc-d2cc-4b7a-b259-6d25c23cf252">
 </p>
 
 ## Live App
