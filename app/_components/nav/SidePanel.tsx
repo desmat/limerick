@@ -459,7 +459,7 @@ export default function SidePanel({
                 <Link
                   key="github"
                   className="flex flex-row gap-2"
-                  href="https://github.com/desmat/haiku"
+                  href="https://github.com/desmat/limerick"
                   target="_blank"
                   onClick={() => {
                     trackEvent("clicked-github", {

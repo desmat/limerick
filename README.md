@@ -1,11 +1,10 @@
-# AI-Powered Haiku Poetry, Generative Art and Daily Puzzles
+# AI-Powered Limericks and Generative Art
 
-Haiku poem assistant by OpenAI's ChatGPT and generative art by DALL-E:
+Limerick poem assistant by OpenAI's ChatGPT and generative art by DALL-E:
 
-- **AI-generated haiku poems** based on any given themes;
+- **AI-generated limerick poems** based on any given themes;
 - **AI-powered assistant** helping authors with their creations;
 - **AI-generated background image** matching the generated haiku;
-- **Daily puzzles** with drag-and-drop UX.
 
 ### Screenshots
 
@@ -15,10 +14,9 @@ Haiku poem assistant by OpenAI's ChatGPT and generative art by DALL-E:
   <img height="400" alt="Screen Shot 2024-03-25 at 3 04 30 PM" src="https://github.com/desmat/haiku/assets/3298837/1f5711f6-44ff-4a5f-bb29-560cb8ad10f7">
 </p>
 
-## Live Apps
+## Live App
 
-- Creator experience: [haikugenius.art](https://haikugenius.io/)
-- Daily puzzles: [haikudle.art](https://haikudle.art/)
+[limericks.ai](https://limericks.ai/)
 
 ## Tech
 
