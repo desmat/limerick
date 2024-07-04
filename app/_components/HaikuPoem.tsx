@@ -802,7 +802,7 @@ export default function HaikuPoem({
 
   }, [haiku?.version]);
 
-  console.log(">> app._component.SidePanel.useEffect", { currentPoem, editPoem, displayPoem, lastPoem });
+  // console.log(">> app._component.SidePanel.useEffect", { currentPoem, editPoem, displayPoem, lastPoem });
 
   return (
     <div className="relative h-full">
