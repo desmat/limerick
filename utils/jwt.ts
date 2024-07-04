@@ -15,9 +15,9 @@ export async function encodeJWT(payload: any) {
       typ: 'JWT',
       alg: algorithm,
     })
-    .setIssuer('https://haiku.desmat.ca')
+    .setIssuer('https://limericks.ai/')
     // .setSubject('uniqueUserId')
-    .setAudience('haiku.desmat.ca')
+    .setAudience('limericks.ai')
     .setExpirationTime('1y')
     .setIssuedAt()
     .sign(privateKey);
