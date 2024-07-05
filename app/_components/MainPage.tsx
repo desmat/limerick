@@ -729,50 +729,52 @@ export default function MainPage({
     });
   }
 
-  // useEffect(() => {
-  //   // console.log('>> app.page useEffect []', { user, haikudleReady, previousDailyHaikudleId, userGeneratedHaiku, preferences: user?.preferences, test: !user?.preferences?.onboarded });
-  //   // @ts-ignore
-  //   let timeoutId;
-  //   if (!noOnboarding && user && (haikudleMode && (previousDailyHaikudleId || haikudleReady) || !haikudleMode)) {
-  //     if (previousDailyHaikudleId && !user?.preferences?.onboardedPreviousDaily) {
-  //       timeoutId = setTimeout(showAboutPreviousDaily, 2000);
-  //     } else if (userGeneratedHaiku && !haikudleMode && !user?.preferences?.onboardedGenerated) {
-  //       timeoutId = setTimeout(showAboutGenerated, 2000);
-  //     } else if ((haikuMode || haikudleMode) && !previousDailyHaikudleId && !user?.preferences?.onboarded) {
-  //       timeoutId = setTimeout(haikudleMode ? startFirstVisitHaikudleOnboarding : startFirstVisitOnboarding, 2000);
-  //     } else if (haikuMode && user?.preferences?.onboarded && !user?.preferences?.onboardedMultiLanguage && !user?.isAdmin) {
-  //       timeoutId = setTimeout(showMultiLanguage, 2000);
-  //     } else if (haikudleMode && user?.preferences?.onboarded && !user?.preferences?.onboardedGotoHaikuGenius && !user?.isAdmin) {
-  //       timeoutId = setTimeout(showGotoHaikuGenius, 2000);
-  //     } else if (showcaseMode && user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase && !user?.isAdmin) {
-  //       timeoutId = setTimeout(
-  //         () => startOnboarding(
-  //           showcase_onboardedFirstTime,
-  //           () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
-  //         ),
-  //         2000);
-  //     } else if (showcaseMode && user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase && user?.isAdmin) {
-  //       timeoutId = setTimeout(
-  //         () => startOnboarding(
-  //           showcase_onboardedFirstTime_admin,
-  //           () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
-  //         ),
-  //         2000);
-  //     } else if (showcaseMode && !user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase) {
-  //       timeoutId = setTimeout(
-  //         () => startOnboarding(
-  //           showcase_notOnboardedFirstTime(haiku),
-  //           () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
-  //         ),
-  //         2000);
-  //     }
-  //   }
+  useEffect(() => {
+    // console.log('>> app.page useEffect []', { user, haikudleReady, previousDailyHaikudleId, userGeneratedHaiku, preferences: user?.preferences, test: !user?.preferences?.onboarded });
+    // @ts-ignore
+    let timeoutId;
+    if (!noOnboarding && user && (haikudleMode && (previousDailyHaikudleId || haikudleReady) || !haikudleMode)) {
+      // if (previousDailyHaikudleId && !user?.preferences?.onboardedPreviousDaily) {
+      //   timeoutId = setTimeout(showAboutPreviousDaily, 2000);
+      // } else if (userGeneratedHaiku && !haikudleMode && !user?.preferences?.onboardedGenerated) {
+      //   timeoutId = setTimeout(showAboutGenerated, 2000);
+      // } else 
+      if ((haikuMode || haikudleMode) && !previousDailyHaikudleId && !user?.preferences?.onboarded) {
+        timeoutId = setTimeout(haikudleMode ? startFirstVisitHaikudleOnboarding : startFirstVisitOnboarding, 2000);
+      } 
+      // else if (haikuMode && user?.preferences?.onboarded && !user?.preferences?.onboardedMultiLanguage && !user?.isAdmin) {
+      //   timeoutId = setTimeout(showMultiLanguage, 2000);
+      // } else if (haikudleMode && user?.preferences?.onboarded && !user?.preferences?.onboardedGotoHaikuGenius && !user?.isAdmin) {
+      //   timeoutId = setTimeout(showGotoHaikuGenius, 2000);
+      // } else if (showcaseMode && user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase && !user?.isAdmin) {
+      //   timeoutId = setTimeout(
+      //     () => startOnboarding(
+      //       showcase_onboardedFirstTime,
+      //       () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
+      //     ),
+      //     2000);
+      // } else if (showcaseMode && user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase && user?.isAdmin) {
+      //   timeoutId = setTimeout(
+      //     () => startOnboarding(
+      //       showcase_onboardedFirstTime_admin,
+      //       () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
+      //     ),
+      //     2000);
+      // } else if (showcaseMode && !user?.preferences?.onboarded && !user?.preferences?.onboardedShowcase) {
+      //   timeoutId = setTimeout(
+      //     () => startOnboarding(
+      //       showcase_notOnboardedFirstTime(haiku),
+      //       () => saveUser({ ...user, preferences: { ...user?.preferences, onboardedShowcase: true } })
+      //     ),
+      //     2000);
+      // }
+    }
 
-  //   return () => {
-  //     // @ts-ignore
-  //     timeoutId && clearTimeout(timeoutId);
-  //   }
-  // }, [user, haikudleReady, previousDailyHaikudleId, userGeneratedHaiku]);
+    return () => {
+      // @ts-ignore
+      timeoutId && clearTimeout(timeoutId);
+    }
+  }, [user, haikudleReady, previousDailyHaikudleId, userGeneratedHaiku]);
 
   useEffect(() => {
     // console.log('>> app.page useEffect [haiku?.id, loadingUI, isShowcaseMode, _refreshDelay]', { haiku_id: haiku?.id, loadingUI, isShowcaseMode, _refreshDelay });
@@ -888,7 +890,7 @@ export default function MainPage({
         onDelete={!haiku?.error && doDelete}
         onSaveDailyHaiku={!haiku?.error && saveDailyHaiku}
         onShowAbout={
-          showLimerickDetails
+          // showLimerickDetails
           // user?.isAdmin
           //   ? showHaikuDetails
           //   : userGeneratedHaiku
@@ -898,6 +900,9 @@ export default function MainPage({
           //         ? showAboutPreviousDaily // with onboarding?
           //         : startFirstVisitHaikudleOnboarding
           //       : startFirstVisitOnboarding
+          user?.isAdmin
+          ? showLimerickDetails
+          : startFirstVisitOnboarding
         }
         onSelectHaiku={(id: string) => {
           trackEvent("haiku-selected", {
