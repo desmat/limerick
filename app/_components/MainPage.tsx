@@ -875,7 +875,7 @@ export default function MainPage({
         }}
         refreshDelay={_refreshDelay}
         backupInProgress={backupInProgress}
-        styles={textStyles.slice(0, textStyles.length - 3)}
+        styles={textStyles}
         altStyles={altTextStyles}
         onboardingElement={onboardingElement}
         onClickGenerate={startGenerateHaiku}
