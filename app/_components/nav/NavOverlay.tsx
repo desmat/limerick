@@ -147,8 +147,8 @@ export function NavOverlay({
           <PopOnClick color={haiku?.bgColor}>
             {/* TODO: href to support multi-language */}
             <Logo
-              styles={styles}
-              altStyles={altStyles}
+              styles={[...styles, ...styles.slice(0,1)]}
+              altStyles={[...altStyles, ...altStyles.slice(1,2)]}
               mode={mode}
               href={`/${mode != process.env.EXPERIENCE_MODE ? `?mode=${mode}` : ""}`}
             />
