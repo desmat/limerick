@@ -2,9 +2,9 @@
 
 Limerick poem assistant by OpenAI's ChatGPT and generative art by DALL-E:
 
-- **AI-generated limerick poems** based on any given themes;
-- **AI-powered assistant** helping authors with their creations;
-- **AI-generated background image** matching the generated haiku;
+- **AI-generated limerick poetry** based on any given themes
+- **AI-powered assistant** helping authors with their creations
+- **AI-generated background image** matching the generated haiku
 
 ### Screenshots
 
