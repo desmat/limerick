@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react';
 import { IoAddCircle, IoHelpCircle, IoHeartSharp } from 'react-icons/io5';
-import { FaShare, FaExpand, FaCopy } from "react-icons/fa";
+import { FaShare, FaExpand, FaCopy, FaLink } from "react-icons/fa";
 import { BiLogoInstagramAlt } from "react-icons/bi";
 import { RiTwitterFill } from "react-icons/ri";
 import { HiSwitchVertical, } from "react-icons/hi";
@@ -13,6 +13,7 @@ import { BsDatabaseFillUp } from "react-icons/bs";
 import { FaRandom } from "react-icons/fa";
 import { RiImageFill, RiImageAddLine, RiImageEditLine, RiImageLine } from "react-icons/ri";
 import { TbSocial } from "react-icons/tb";
+import { BsFileImage, BsCardImage } from "react-icons/bs";
 import useUser from '@/app/_hooks/user';
 import { ExperienceMode } from '@/types/ExperienceMode';
 import { Haiku } from '@/types/Haiku';
@@ -132,30 +133,27 @@ export default function BottomLinks({
       <div
         className="relative flex flex-row gap-2 items-center justify-center _font-semibold"
       >
-        {onShowAbout && (haikudleMode || user?.isAdmin) &&
+        {(haikudleMode || user?.isAdmin) &&
           <div
             key="about"
-            className="cursor-pointer relative"
+            className={onShowAbout ? "cursor-pointer relative" : "opacity-40 relative"}
             title="About"
             onClick={() => {
-              trackEvent("clicked-about", {
-                userId: user?.id,
-                location: "bottom-links",
-              });
-              onShowAbout && onShowAbout();
+              if (onShowAbout) {
+                trackEvent("clicked-about", {
+                  userId: user?.id,
+                  location: "bottom-links",
+                });
+                onShowAbout();
+              }
             }}
           >
             {/* {user?.isAdmin && (haiku?.dailyHaikuId || haiku?.dailyHaikudleId || haiku.isIncorrect) &&
               <div className={`absolute top-[-0rem] right-[-0rem] rounded-full w-[0.6rem] h-[0.6rem] ${haiku.isIncorrect ? "bg-red-600" : "bg-blue-600"}`} />
             } */}
-            <PopOnClick color={haiku?.bgColor}>
+            <PopOnClick color={haiku?.bgColor} disabled={!onShowAbout}>
               <IoHelpCircle className="text-[2rem] md:text-[2.25rem]" />
             </PopOnClick>
-          </div>
-        }
-        {!onShowAbout &&
-          <div className="opacity-40">
-            <IoHelpCircle className="text-[2rem] md:text-[2.25rem]" />
           </div>
         }
         {/* <Link
@@ -248,37 +246,79 @@ export default function BottomLinks({
         >
           <MdMail className="text-[1.5rem] md:text-[1.75rem]" />
         </Link> */}
-        {user?.isAdmin && haiku?.id && onLikeHaiku &&
+        {user?.isAdmin && // haiku?.id && onLikeHaiku &&
           <StyledLayers
-            styles={haiku.likedAt ? altStyles.slice(0, 1) : styles.slice(0, 0)}
+            styles={haiku?.likedAt ? altStyles.slice(0, 1) : styles.slice(0, 0)}
           >
             <div
               key="heart"
-              title={`${haiku.likedAt ? "Un-like this haiku" : "Like this haiku"} ${user?.isAdmin ? `(${haiku.numLikes} like${!haiku.numLikes || haiku.numLikes > 1 ? "s" : ""})` : ""}`}
-              className="cursor-pointer relative"
-              onClick={onLikeHaiku}
+              title={`${haiku?.likedAt ? "Un-like this haiku" : "Like this haiku"} ${user?.isAdmin ? `(${haiku?.numLikes} like${!haiku?.numLikes || haiku?.numLikes > 1 ? "s" : ""})` : ""}`}
+              className={haiku?.id && onLikeHaiku ? "cursor-pointer relative" : "opacity-40 relative"}
+              onClick={(e: any) => haiku?.id && onLikeHaiku && onLikeHaiku()}
             >
               {user?.isAdmin && haiku?.numLikes > 0 &&
                 <div className="absolute top-[-0.1rem] right-[-0.1rem] rounded-full w-[0.6rem] h-[0.6rem] bg-red-600" />
               }
-              <PopOnClick color={haiku?.bgColor} >
+              <PopOnClick color={haiku?.bgColor} disabled={!(haiku?.id && onLikeHaiku)} >
                 <IoHeartSharp className="text-[1.75rem] md:text-[2rem]" />
               </PopOnClick>
             </div>
           </StyledLayers>
         }
-        {user?.isAdmin && (!haiku?.id || !onLikeHaiku) &&
-          <div className="opacity-40">
-            <IoHeartSharp className="text-[1.75rem] md:text-[2rem]" />
-          </div>
+        {user?.isAdmin &&
+          <LinkGroup
+            key="share"
+            className={haiku?.id ? "cursor-pointer" : "opacity-40"}
+            title="Switch mode"
+            icon={
+              <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id}>
+                <FaShare className="text-[1.5rem] md:text-[1.75rem]" />
+              </PopOnClick>
+            }
+            links={[
+              <Link
+                key="link"
+                href={`/${haiku?.id}`}
+                title="Copy link to share"
+                className={haiku?.id && onCopyLink ? "cursor-copy" : "opacity-40"}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  haiku?.id && onCopyLink && onCopyLink()
+                }}
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onCopyLink}>
+                  <FaLink className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem]" />
+                </PopOnClick>
+              </Link>,
+              <div
+                key="copy"
+                className={haiku?.id && onCopyHaiku ? "cursor-copy" : "opacity-40"}
+                title="Copy limerick poem"
+                onClick={() => {
+                  if (haiku?.id && onCopyHaiku) {
+                    trackEvent("haiku-copied", {
+                      userId: user?.id,
+                      id: haiku.id,
+                      location: "bottom-links",
+                    });
+                    onCopyHaiku();
+                  }
+                }}
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onCopyHaiku}>
+                  <FaCopy className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem] ml-[-0.1rem]" />
+                </PopOnClick>
+              </div>,
+            ]}
+          />
         }
-        {true && //user?.isAdmin &&
+        {!user?.isAdmin &&
           <div
             key="copy"
             className={haiku?.id && onCopyHaiku ? "cursor-copy" : "opacity-40"}
-            title="Copy haiku poem "
+            title="Copy limerick poem"
             onClick={() => {
-              if (onCopyHaiku) {
+              if (haiku?.id && onCopyHaiku) {
                 trackEvent("haiku-copied", {
                   userId: user?.id,
                   id: haiku.id,
@@ -289,40 +329,25 @@ export default function BottomLinks({
             }}
           >
             <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onCopyHaiku}>
-              <FaCopy className="text-[1.5rem] md:text-[1.75rem]" />
+              <FaCopy className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem] ml-[-0.1rem]" />
             </PopOnClick>
           </div>
         }
-        {haiku?.id && onCopyLink &&
-          <div className="onboarding-container">
-            {onboardingElement == "bottom-links-share" &&
-              <div className="onboarding-focus" />
-            }
-            <StyledLayers
-              styles={styles}
-              disabled={onboardingElement != "bottom-links-share"}
-            >
-              <Link
-                key="link"
-                href={`/${haiku.id}`}
-                title="Copy link to share"
-                className="cursor-copy"
-                onClick={(e: any) => {
-                  e.preventDefault();
-                  onCopyLink()
-                }}
-              >
-                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id}>
-                  <FaShare className="text-[1.5rem] md:text-[1.75rem]" />
-                </PopOnClick>
-              </Link>
-            </StyledLayers>
-          </div>
-        }
-        {(!haiku?.id || !onCopyLink) &&
-          <div className="opacity-40">
-            <FaShare className="text-[1.5rem] md:text-[1.75rem]" />
-          </div>
+        {!user?.isAdmin &&
+          <Link
+            key="link"
+            href={`/${haiku?.id}`}
+            title="Copy link to share"
+            className={haiku?.id && onCopyLink ? "cursor-copy" : "opacity-40"}
+            onClick={(e: any) => {
+              e.preventDefault();
+              haiku?.id && onCopyLink && onCopyLink()
+            }}
+          >
+            <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onCopyLink}>
+              <FaShare className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem]" />
+            </PopOnClick>
+          </Link>
         }
         {user?.isAdmin &&
           <div
@@ -348,6 +373,30 @@ export default function BottomLinks({
               </PopOnClick>
             }
             links={[
+              user?.isAdmin && haiku?.id && haiku?.shared && process.env.BLOB_URL &&
+              <Link
+                key="downloadSocialImage"
+                className={haiku?.id ? "cursor-pointer" : "opacity-40"}
+                title="Download social media image"
+                href={`${process.env.BLOB_URL}/social_img_limericks/${haiku?.id}_${haiku?.version || 0}.png`}
+                target="_blank"
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.bgImage}>
+                  <BsCardImage className="text-[1.75rem] md:text-[2rem] p-[0.15rem]" />
+                </PopOnClick>
+              </Link>,
+              // user?.isAdmin && haiku?.id && haiku?.shared && process.env.BLOB_URL &&
+              // <Link
+              //   key="downloadShowcaseImage"
+              //   className={haiku?.id ? "cursor-pointer" : "opacity-40"}
+              //   title="Download showcase image"
+              //   href={`${process.env.BLOB_URL}/social_img_limerick/${haiku?.id}_${haiku?.version || 0}.png`}
+              //   target="_blank"
+              // >
+              //   <PopOnClick color={haiku?.bgColor} disabled={!haiku?.bgImage}>
+              //     <BsFileImage className="text-[1.75rem] md:text-[2rem] p-[0.15rem]" />
+              //   </PopOnClick>
+              // </Link>,
               user?.isAdmin && haiku?.id &&
               <Link
                 key="downloadImage"
