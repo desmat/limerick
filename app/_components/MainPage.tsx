@@ -739,7 +739,7 @@ export default function MainPage({
       // } else if (userGeneratedHaiku && !haikudleMode && !user?.preferences?.onboardedGenerated) {
       //   timeoutId = setTimeout(showAboutGenerated, 2000);
       // } else 
-      if ((haikuMode || haikudleMode) && !previousDailyHaikudleId && !user?.preferences?.onboarded) {
+      if ((haikuMode || haikudleMode) && !previousDailyHaikudleId && !user?.isAdmin && !user?.preferences?.onboarded) {
         timeoutId = setTimeout(haikudleMode ? startFirstVisitHaikudleOnboarding : startFirstVisitOnboarding, 2000);
       } 
       // else if (haikuMode && user?.preferences?.onboarded && !user?.preferences?.onboardedMultiLanguage && !user?.isAdmin) {
