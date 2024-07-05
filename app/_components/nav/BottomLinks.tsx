@@ -12,6 +12,7 @@ import { MdHome, MdDelete, MdFacebook } from "react-icons/md";
 import { BsDatabaseFillUp } from "react-icons/bs";
 import { FaRandom } from "react-icons/fa";
 import { RiImageFill, RiImageAddLine, RiImageEditLine, RiImageLine } from "react-icons/ri";
+import { TbSocial } from "react-icons/tb";
 import useUser from '@/app/_hooks/user';
 import { ExperienceMode } from '@/types/ExperienceMode';
 import { Haiku } from '@/types/Haiku';
@@ -24,11 +25,13 @@ function LinkGroup({
   icon,
   className,
   title,
+  disabled,
   links,
 }: {
   icon: any,
   className?: string,
   title?: string,
+  disabled?: boolean,
   links: any[],
 }) {
   const [linksVisible, setLinksVisible] = useState(false);
@@ -52,7 +55,7 @@ function LinkGroup({
         {icon}
       </div>
       <div
-        className={`_bg-yellow-200 flex flex-col gap-[0rem] absolute bottom-[-0rem] left-[0rem] p-[0rem]`}
+        className={`_bg-yellow-200 flex flex-col gap-[0rem] absolute bottom-[-0rem] left-[0rem] p-[0rem] ${disabled ? "opacity-40" : "cursor-pointer"}`}
         style={{
           display: linksVisible ? "block" : "none",
         }}
@@ -142,9 +145,9 @@ export default function BottomLinks({
               onShowAbout && onShowAbout();
             }}
           >
-            {user?.isAdmin && (haiku?.dailyHaikuId || haiku?.dailyHaikudleId || haiku.isIncorrect) &&
+            {/* {user?.isAdmin && (haiku?.dailyHaikuId || haiku?.dailyHaikudleId || haiku.isIncorrect) &&
               <div className={`absolute top-[-0rem] right-[-0rem] rounded-full w-[0.6rem] h-[0.6rem] ${haiku.isIncorrect ? "bg-red-600" : "bg-blue-600"}`} />
-            }
+            } */}
             <PopOnClick color={haiku?.bgColor}>
               <IoHelpCircle className="text-[2rem] md:text-[2.25rem]" />
             </PopOnClick>
@@ -266,7 +269,7 @@ export default function BottomLinks({
         }
         {user?.isAdmin && (!haiku?.id || !onLikeHaiku) &&
           <div className="opacity-40">
-            <IoHeartSharp className="text-[1.5rem] md:text-[1.75rem]" />
+            <IoHeartSharp className="text-[1.75rem] md:text-[2rem]" />
           </div>
         }
         {true && //user?.isAdmin &&
@@ -333,11 +336,12 @@ export default function BottomLinks({
             </PopOnClick>
           </div>
         }
-        {user?.isAdmin && haiku?.bgImage &&
+        {user?.isAdmin &&
           <LinkGroup
             key="imageOptions"
             className={haiku?.id ? "cursor-pointer" : "opacity-40"}
             title="Image options"
+            disabled={!haiku?.bgImage}
             icon={
               <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id}>
                 <RiImageFill className="text-[1.75rem] md:text-[2rem]" />
@@ -451,19 +455,46 @@ export default function BottomLinks({
           </Link>
         }
         {user?.isAdmin && process.env.EXPERIENCE_MODE != "haikudle" &&
-          <Link
-            key="socialImgMode"
-            href={`/${haiku ? haiku?.id : ""}?mode=showcase`}
-            className={haiku?.id && onSwitchMode ? "cursor-pointer" : "opacity-40"}
-            title="Switch to showcase mode "
-            onClick={(e: any) => {
-              haiku?.id && onSwitchMode && onSwitchMode("showcase");
-            }}
-          >
-            <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onSwitchMode}>
-              <FaExpand className="text-[1.5rem] md:text-[1.75rem]" />
-            </PopOnClick>
-          </Link>
+          <LinkGroup
+            key="modes"
+            className={haiku?.id ? "cursor-pointer" : "opacity-40"}
+            title="Switch mode"
+            icon={
+              <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id}>
+                <HiSwitchVertical className="text-[1.75rem] md:text-[2rem]" />
+              </PopOnClick>
+            }
+            links={[
+              user?.isAdmin && haiku?.id &&
+              <Link
+                key="showcaseImgMode"
+                href={`/${haiku ? haiku?.id : ""}?mode=showcase`}
+                className={haiku?.id && onSwitchMode ? "cursor-pointer" : "opacity-40"}
+                title="Switch to showcase mode "
+                onClick={(e: any) => {
+                  haiku?.id && onSwitchMode && onSwitchMode("showcase");
+                }}
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onSwitchMode}>
+                  <FaExpand className="text-[1.75rem] md:text-[2rem] p-[0.1rem]" />
+                </PopOnClick>
+              </Link>,
+              user?.isAdmin && haiku?.id &&
+              <Link
+                key="socialImgMode"
+                href={`/${haiku ? haiku?.id : ""}?mode=social-img`}
+                className={haiku?.id && onSwitchMode ? "cursor-pointer" : "opacity-40"}
+                title="Switch to social-img mode "
+                onClick={(e: any) => {
+                  haiku?.id && onSwitchMode && onSwitchMode("social-img");
+                }}
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onSwitchMode}>
+                  <TbSocial className="text-[1.75rem] md:text-[2rem] p-[0.1rem]" />
+                </PopOnClick>
+              </Link>,
+            ]}
+          />
         }
       </div>
       {

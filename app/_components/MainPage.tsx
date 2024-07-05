@@ -523,7 +523,9 @@ export default function MainPage({
     const url = newMode
       ? `/${haikuId || ""}?mode=${newMode}`
       // @ts-ignore
-      : `/${haikuId || ""}?mode=${mode == "haiku" ? "haikudle" : mode != "haiku" ? "haiku" : process.env.EXPERIENCE_MODE}`
+      : mode != "haiku"
+        ? `/${haikuId || ""}`
+        : `/${haikuId || ""}?mode=${mode == "haiku" ? "haikudle" : mode != "haiku" ? "haiku" : process.env.EXPERIENCE_MODE}`
 
     setLoadingUI(true);
     window.history.replaceState(null, '', url);
@@ -741,7 +743,7 @@ export default function MainPage({
       // } else 
       if ((haikuMode || haikudleMode) && !previousDailyHaikudleId && !user?.isAdmin && !user?.preferences?.onboarded) {
         timeoutId = setTimeout(haikudleMode ? startFirstVisitHaikudleOnboarding : startFirstVisitOnboarding, 2000);
-      } 
+      }
       // else if (haikuMode && user?.preferences?.onboarded && !user?.preferences?.onboardedMultiLanguage && !user?.isAdmin) {
       //   timeoutId = setTimeout(showMultiLanguage, 2000);
       // } else if (haikudleMode && user?.preferences?.onboarded && !user?.preferences?.onboardedGotoHaikuGenius && !user?.isAdmin) {
@@ -901,8 +903,8 @@ export default function MainPage({
           //         : startFirstVisitHaikudleOnboarding
           //       : startFirstVisitOnboarding
           user?.isAdmin
-          ? showLimerickDetails
-          : startFirstVisitOnboarding
+            ? showLimerickDetails
+            : startFirstVisitOnboarding
         }
         onSelectHaiku={(id: string) => {
           trackEvent("haiku-selected", {
@@ -949,7 +951,7 @@ export default function MainPage({
           regenerateImage={!haiku?.error && !haikudleMode && (() => ["haiku", "haikudle"].includes(mode) && (user?.isAdmin || haiku?.createdBy == user?.id) && startRegenerateHaikuImage && startRegenerateHaikuImage())}
           copyHaiku={!haiku?.error && copyHaiku}
           switchMode={switchMode}
-          // updateLayout={adjustLayout}
+        // updateLayout={adjustLayout}
         />
       }
     </div>
