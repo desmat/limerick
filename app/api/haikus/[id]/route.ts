@@ -70,7 +70,7 @@ export async function PUT(
   }
 
   const data: any = await request.json();
-  const { haiku: haikuToSave } = data;
+  const { haiku: haikuToSave, options } = data;
 
   if (!haikuToSave) {
     return NextResponse.json(
@@ -95,10 +95,14 @@ export async function PUT(
   //   );
   // }
 
-  const savedHaiku = await saveHaiku(user, {
-    ...haikuToSave,
-    isDemo: haiku.isDemo,
-  });
+  const savedHaiku = await saveHaiku(
+    user,
+    {
+      ...haikuToSave,
+      isDemo: haiku.isDemo,
+    },
+    options
+  );
   return NextResponse.json({ haiku: savedHaiku });
   // return NextResponse.json({ haiku: haikuToSave });
 }

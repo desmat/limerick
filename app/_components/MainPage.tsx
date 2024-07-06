@@ -691,7 +691,7 @@ export default function MainPage({
 
   const debounceSaveHaiku = useDebouncedCallback(async (haiku: Haiku, then?: any) => {
     // console.log('>> app.page.debounceSaveLayout()', { haiku });
-    const ret = await saveHaiku(user, haiku);
+    const ret = await saveHaiku(user, haiku, { noVersion: true });
     // console.log('>> app.page.debounceSaveLayout() Layout adjustment saved', { ret });
     then && then(ret);
   }, 500);
