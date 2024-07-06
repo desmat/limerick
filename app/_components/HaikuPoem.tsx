@@ -855,7 +855,7 @@ export default function HaikuPoem({
           <div className="onboarding-focus" />
         }
         <div
-          className={`h-full bg-pink-200 _p-[2.5rem] ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
+          className={`h-full _bg-pink-200 _p-[2.5rem] ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
           style={{
             cursor: showcaseMode ? "pointer" : "",
             fontSize,
@@ -881,14 +881,14 @@ export default function HaikuPoem({
             // margin: showcaseMode ? "32px auto 0 autp" : "64px auto 0 auto",
             padding: showcaseMode 
               ? "32px 32px"
-              : "64px 32px"
+              : "64px 32px 74px"
           }}
           onTouchMove={handleTouchMove}
           onMouseLeave={handleMouseUp}
           onMouseEnter={handleMouseUp}
         >
           <div
-            className="h-full bg-purple-200 flex flex-col _transition-all w-fit m-auto md:text-[26pt] sm:text-[22pt] text-[18pt]"
+            className="h-full _bg-purple-200 flex flex-col _transition-all w-fit m-auto md:text-[26pt] sm:text-[22pt] text-[18pt]"
             onClick={handleClickHaiku}
             title={canUpdateLayout
               ? "Update layout"
