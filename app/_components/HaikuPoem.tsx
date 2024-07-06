@@ -43,7 +43,6 @@ export default function HaikuPoem({
   onboardingElement,
   regeneratePoem,
   regenerateImage,
-  refresh,
   saveHaiku,
   copyHaiku,
   switchMode,
@@ -60,7 +59,6 @@ export default function HaikuPoem({
   onboardingElement?: string,
   regeneratePoem?: any,
   regenerateImage?: any,
-  refresh?: any,
   saveHaiku?: any,
   copyHaiku?: any,
   switchMode?: any,
@@ -70,7 +68,6 @@ export default function HaikuPoem({
   // console.log('>> app._components.HaikuPoem.render()', { mode, haikuId: haiku?.id, version, status: haiku?.status, popPoem, haiku });
   const showcaseMode = mode == "showcase";
   const onboarding = typeof (onboardingElement) == "string"
-  const maxHaikuTheme = showcaseMode ? 32 : 18;
   const dateCode = moment().format("YYYYMMDD");
   const layout = haiku?.layout?.custom || presetLayouts[defaultPresetLayout];
 
@@ -81,9 +78,9 @@ export default function HaikuPoem({
   const copyAllowed = !!copyHaiku && !switchModeAllowed;
   const canCopy = copyAllowed && !saving;
 
-  const quickEditAllowed = haiku?.createdBy == user?.id || user?.isAdmin || haiku?.isDemo;
-  const canClickQuickEdit = quickEditAllowed && !showcaseMode;
-  let [quickEditing, setQuickEditing] = useState(false);
+  const editAllowed = haiku?.createdBy == user?.id || user?.isAdmin || haiku?.isDemo;
+  const canEdit = editAllowed && !showcaseMode;
+  let [editing, setEditing] = useState(false);
   const [lastVersion, setLastVersion] = useState<number | undefined>(haiku?.version);
 
   const updateLayoutAllowed = !!updateLayout && (user?.isAdmin || haiku?.createdBy && haiku?.createdBy == user?.id);
@@ -92,7 +89,6 @@ export default function HaikuPoem({
   const regeneratePoemAllowed = regeneratePoem && (user?.isAdmin || haiku?.createdBy == user?.id) && regeneratePoem;
   const regenerateImageAllowed = regenerateImage && (user?.isAdmin || haiku?.createdBy == user?.id) && regenerateImage;
   const canRegeneratePoem = regeneratePoemAllowed && !saving;
-  const canRefresh = !!refresh;
   const canRegenerateImage = regenerateImageAllowed && !saving;
   // console.log('>> app._components.HaikuPage.HaikuPoem.render()', { showcaseMode, canCopy, canSwitchMode });
 
@@ -118,7 +114,7 @@ export default function HaikuPoem({
     // TODO
 
     // e.preventDefault();
-    setQuickEditing(true);
+    setEditing(true);
 
     longPressTimerRef.current = undefined;
   }
@@ -133,7 +129,7 @@ export default function HaikuPoem({
 
     console.log('>> app._components.HaikuPoem.handleClickHaiku()', { mode, haikuId: haiku?.id, status: haiku?.status, popPoem, haiku });
 
-    if (quickEditing) return;
+    if (editing) return;
 
     // if (showcaseMode && canRefresh) {
     //   return refresh(e);
@@ -213,14 +209,14 @@ export default function HaikuPoem({
   };
 
   const handleMouseDownWord = async (e: any, lineNum: number, wordNum: number) => {
-    if (!canClickQuickEdit) return;
+    if (!canEdit) return;
 
     // @ts-ignore
     longPressTimerRef.current = setTimeout(() => {
       handlePointerEnterWord(e, lineNum, wordNum);
     }, 250);
 
-    if (!quickEditing) return;
+    if (!editing) return;
     // console.log(">> app._component.HaikuPoem.handleMouseDownWord", { e, lineNum, wordNum });
 
     mouseDown = true;
@@ -234,7 +230,7 @@ export default function HaikuPoem({
     longPressTimerRef.current && clearTimeout(longPressTimerRef.current)
     longPressTimerRef.current = undefined;
 
-    if (!quickEditing) return;
+    if (!editing) return;
     // console.log(">> app._component.HaikuPoem.handleMouseUp", { e });
 
     mouseDown = false;
@@ -249,7 +245,7 @@ export default function HaikuPoem({
   };
 
   const handleMouseMoveWord = async (e: any, lineNum: number, wordNum: number) => {
-    if (!quickEditing) return;
+    if (!editing) return;
     // console.log(">> app._component.HaikuPoem.handleMouseMoveWord", { e, lineNum, wordNum });
 
     if (mouseDown) {
@@ -278,12 +274,12 @@ export default function HaikuPoem({
       clearTimeout(longPressTimerRef.current)
       longPressTimerRef.current = undefined;
 
-      quickEditing = true;
-      setQuickEditing(quickEditing);
+      editing = true;
+      setEditing(editing);
       handleMouseDownWord(e, lineNum, wordNum);
     }
 
-    if (!quickEditing) return;
+    if (!editing) return;
 
     // console.log(">> app._component.HaikuPoem.handlePointerEnterWord", { e, lineNum, wordNum });
 
@@ -355,7 +351,7 @@ export default function HaikuPoem({
 
   const handleTouchMove = async (e: any) => {
     // console.log("app._component.HaikuPoem.handleTouchMove", { quickEditing, mouseDown, killingWords });
-    if (!quickEditing) return;
+    if (!editing) return;
     // console.log("app._component.HaikuPoem.handleTouchMove", { e });
     debouncedTouchMoved(e);
     // findMovedOver(e);
@@ -378,14 +374,14 @@ export default function HaikuPoem({
         {onboardingElement && ["poem-and-poem-actions"].includes(onboardingElement) &&
           <div className="onboarding-focus double" />
         }
-        {quickEditAllowed &&
+        {editAllowed &&
           <div
             className={`${!saving ? "cursor-pointer" : "cursor-default"} md:mt-[0.05rem] mt-[0.03rem]`}
             title="Edit this haiku"
             onClick={(e: any) => {
               e.preventDefault();
-              if (canClickQuickEdit) {
-                setQuickEditing(!quickEditing);
+              if (canEdit) {
+                setEditing(!editing);
               }
             }}
           >
@@ -393,10 +389,10 @@ export default function HaikuPoem({
               <PopOnClick>
                 <FaMagic className={`
                   h-4 w-4 md:h-5 md:w-5 
-                  ${quickEditing ? "animate-pulse" : ""}
-                  ${saving || !canClickQuickEdit
+                  ${editing ? "animate-pulse" : ""}
+                  ${saving || !canEdit
                     ? "opacity-60"
-                    : canClickQuickEdit
+                    : canEdit
                       ? "opacity-100"
                       : ""
                   }
@@ -469,7 +465,7 @@ export default function HaikuPoem({
 
   useEffect(() => {
     if (haiku?.version && haiku.version != lastVersion) {
-      setQuickEditing(false);
+      setEditing(false);
       setLastVersion(haiku.version);
     }
 
@@ -483,7 +479,7 @@ export default function HaikuPoem({
       {!showcaseMode &&
         <div
           className={`_bg-pink-100 fixed top-0 left-0 w-full h-full ${saving ? " opacity-50" : ""}`}
-          onClick={() => quickEditing && setQuickEditing(false)}
+          onClick={() => editing && setEditing(false)}
         />
       }
       <div className="onboarding-container flex"
@@ -540,9 +536,9 @@ export default function HaikuPoem({
           >
             <PopOnClick
               className="h-full"
-              color={quickEditing ? haiku?.color : haiku?.bgColor}
-              force={popPoem || quickEditing || haiku?.version && haiku.version != lastVersion}
-              disabled={quickEditing || (!canCopy && !canSwitchMode && !canUpdateLayout)}
+              color={editing ? haiku?.color : haiku?.bgColor}
+              force={popPoem || editing || haiku?.version && haiku.version != lastVersion}
+              disabled={editing || (!canCopy && !canSwitchMode && !canUpdateLayout)}
               active={/*quickEditing || */  !!(onboardingElement && onboardingElement.includes("poem"))}
               hoverSupported={false}
             >
@@ -620,7 +616,7 @@ export default function HaikuPoem({
                                       className={`poem-line-word poem-line-word-${j} _bg-yellow-200 relative _mx-[-0.7rem] 
                                         ${saving
                                           ? "cursor-wait opacity-50 animate-pulse"
-                                          : quickEditing
+                                          : editing
                                             ? "cursor-crosshair opacity-80"
                                             : canUpdateLayout
                                               ? "cursor-row-resize"
@@ -643,7 +639,7 @@ export default function HaikuPoem({
                                         <PopOnClick
                                           color={haiku?.color}
                                           force={!displayPoem[i][j] || !!(lastPoem && lastPoem[i][j] && lastPoem[i][j] != currentPoem[i][j])}
-                                          disabled={!quickEditing || quickEditing && !displayPoem[i][j]}
+                                          disabled={!editing || editing && !displayPoem[i][j]}
                                           hoverSupported={true}
                                         >
                                           {j == 0 &&
@@ -662,7 +658,7 @@ export default function HaikuPoem({
                             </StyledLayers>
                           </div>
                         }
-                        {!spacer && i == currentPoem.length - 1 && !showcaseMode && (copyAllowed || regeneratePoemAllowed || quickEditAllowed) &&
+                        {!spacer && i == currentPoem.length - 1 && !showcaseMode && (copyAllowed || regeneratePoemAllowed || editAllowed) &&
                           <div className="flex flex-grow-0 justify-end relative h-0">
                             <div className="absolute top-0 right-0 z-40"
                               onMouseDown={(e: any) => {

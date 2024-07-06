@@ -12,7 +12,6 @@ export default function HaikuPage({
   user,
   mode,
   haiku,
-  version,
   styles,
   altStyles,
   fontSize,
@@ -20,18 +19,15 @@ export default function HaikuPage({
   regenerating,
   loading,
   onboardingElement,
-  refresh,
   saveHaiku,
   regeneratePoem,
   regenerateImage,
-  copyHaiku,
   switchMode,
   updateLayout,
 }: {
   user?: User,
   mode: ExperienceMode,
   haiku?: Haiku,
-  version?: number,
   styles: any[],
   altStyles?: any[],
   fontSize?: string | undefined,
@@ -39,11 +35,9 @@ export default function HaikuPage({
   regenerating?: boolean,
   loading?: boolean,
   onboardingElement?: string,
-  refresh?: any,
   saveHaiku?: any
   regeneratePoem?: any,
   regenerateImage?: any,
-  copyHaiku?: any,
   switchMode?: any,
   updateLayout?: any,
 }) {
@@ -82,7 +76,6 @@ export default function HaikuPage({
               onboardingElement={onboardingElement}
               regeneratePoem={regeneratePoem}
               regenerateImage={regenerateImage}
-              refresh={refresh}
               saveHaiku={saveHaiku}
               // copyHaiku={copyHaiku}
               switchMode={switchMode}
