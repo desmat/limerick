@@ -859,26 +859,8 @@ export default function HaikuPoem({
           style={{
             cursor: showcaseMode ? "pointer" : "",
             fontSize,
-            // width: "calc(100vw - 64px)",
             width: "100vw",
-            // maxWidth: layout?.spacing ? "calc(100vw - 64px)" : "90vh",
-            // minWidth: "200px",
             height: "min(100vh, 100dvh)",
-            // height: showcaseMode
-              // ? "min(calc(100dvh - 64px), calc(100vh - 64px))"
-              // : "min(calc(100dvh - 64px), calc(100vh - 64px))",
-            // ? "90vh"
-            // : "80vh",
-            // maxHeight: showcaseMode
-            //   ? "90vh"
-            //   : "78vh",
-            // margin: showcaseMode
-            //   ? "32px 32px 0px"
-            //   : "64px 32px 0px"
-            // height: showcaseMode ? "min(calc(100dvh - 64px), calc(100vh - 64px))" : "min(calc(100dvh - 128px), calc(100vh - 128px))",
-            // minHeight: showcaseMode ? "" : "50vh",
-            // maxHeight: showcaseMode ? "" : "calc(100vh - 192px)",
-            // margin: showcaseMode ? "32px auto 0 autp" : "64px auto 0 auto",
             padding: showcaseMode 
               ? "32px 32px"
               : "72px 32px"
