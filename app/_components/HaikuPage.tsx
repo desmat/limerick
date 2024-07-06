@@ -75,7 +75,6 @@ export default function HaikuPage({
               user={user}
               mode={mode}
               haiku={haiku}
-              version={version}
               popPoem={popPoem}
               styles={styles}
               altStyles={altStyles}
