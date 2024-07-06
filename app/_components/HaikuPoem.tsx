@@ -881,7 +881,7 @@ export default function HaikuPoem({
             // margin: showcaseMode ? "32px auto 0 autp" : "64px auto 0 auto",
             padding: showcaseMode 
               ? "32px 32px"
-              : "64px 32px 74px"
+              : "72px 32px"
           }}
           onTouchMove={handleTouchMove}
           onMouseLeave={handleMouseUp}
