@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { MetadataRoute } from 'next'
 import { getDailyHaiku } from '@/services/haikus';
+import { metaUrl } from './layout';
  
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestDailyHaiku = await getDailyHaiku();
@@ -8,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: 'https://limericks.ai/',
+      url: metaUrl,
       lastModified,
       changeFrequency: 'weekly',
       priority: 1,
