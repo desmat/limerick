@@ -855,16 +855,15 @@ export default function HaikuPoem({
           <div className="onboarding-focus" />
         }
         <div
-          className={`h-full _bg-pink-200 _p-[2.5rem] m-auto ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
+          className={`h-full _bg-pink-200 _p-[2.5rem] ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
           style={{
             cursor: showcaseMode ? "pointer" : "",
             fontSize,
-            width: "calc(100vw - 64px)",
-            maxWidth: layout?.spacing ? "calc(100vw - 64px)" : "90vh",
-            minWidth: "200px",
-            height: showcaseMode ? "calc(100vh - 64px)" : "120vw",
-            minHeight: showcaseMode ? "" : "50vh",
-            maxHeight: showcaseMode ? "" : "calc(100vh - 192px)"
+            width: "100vw",
+            height: "min(100vh, 100dvh)",
+            padding: showcaseMode 
+              ? "32px 32px"
+              : "72px 32px"
           }}
           onTouchMove={handleTouchMove}
           onMouseLeave={handleMouseUp}
@@ -945,8 +944,8 @@ export default function HaikuPoem({
                               className={`_bg-yellow-200 `}
                               styles={
                                 showcaseMode
-                                ? [...styles, ...styles.slice(1,2)]
-                                : styles
+                                  ? [...styles, ...styles.slice(1, 2)]
+                                  : styles
                               }>
                               <div
                                 className="relative m-[0rem] _transition-all"
