@@ -862,7 +862,7 @@ export default function HaikuPoem({
             width: "calc(100vw - 64px)",
             // maxWidth: layout?.spacing ? "calc(100vw - 64px)" : "90vh",
             // minWidth: "200px",
-            height: showcaseMode ? "calc(100dvh - 64px)" : "calc(100dvh - 128px)",
+            height: showcaseMode ? "min(calc(100dvh - 64px), calc(100vh - 64px))" : "min(calc(100dvh - 128px), calc(100vh - 128px))",
             // minHeight: showcaseMode ? "" : "50vh",
             // maxHeight: showcaseMode ? "" : "calc(100vh - 192px)",
             margin: showcaseMode ? "32px auto" : "64px auto",
