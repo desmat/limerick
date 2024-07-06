@@ -72,3 +72,7 @@ export function round(n: number, digits?: any) {
 }
 
 export const nullFunction = () => undefined;
+
+export function pickRandom(arr: any[]) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}

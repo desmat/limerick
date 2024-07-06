@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import moment from 'moment';
 import { put } from '@vercel/blob';
 import { Store } from "@/types/Store";
-import { uuid } from '@/utils/misc';
+import { pickRandom, uuid } from '@/utils/misc';
 import { Haiku } from '@/types/Haiku';
 import { LanguageType, supportedLanguages } from '@/types/Languages';
 import * as openai from './openai';
@@ -72,7 +72,7 @@ export async function completeLimerickPoem(user: any, haiku: Haiku): Promise<Hai
       ...previousLimericks
         .map((haiku: Haiku) => haiku && haiku?.poem)
         .filter(Boolean)
-    ]))    
+    ]));
   console.log(">> services.limerick.completeLimerickPoem", { previousPoems });
 
   const {
@@ -123,7 +123,7 @@ export async function regenerateLimerickPoem(user: any, haiku: Haiku): Promise<H
       ...previousLimericks
         .map((haiku: Haiku) => haiku && haiku?.poem)
         .filter(Boolean)
-    ]))    
+    ]));
   console.log(">> services.limerick.regenerateLimerickPoem", { previousPoems });
 
   const {
@@ -160,6 +160,26 @@ export async function regenerateLimerickPoem(user: any, haiku: Haiku): Promise<H
 export async function regenerateLimerickImage(user: any, haiku: Haiku, artStyle?: string): Promise<Haiku> {
   console.log(">> services.limerick.regenerateLimerickImage", { user, haiku });
   const debugOpenai = process.env.OPENAI_API_KEY == "DEBUG";
+
+  if (!artStyle) {
+    const previousLimericks: any[] = await Promise.all(
+      Array.from(Array(Math.min(haiku?.version || 0, 16)))
+        .map((_, i: number) => getHaiku(user, haiku.id, undefined, haiku.version - i))
+    );
+    console.log(">> services.limerick.regenerateLimerickImage", { previousLimericks });
+    const previousArtStyles = Array.from(
+      new Set([
+        haiku.artStyle,
+        ...previousLimericks
+          .map((haiku: Haiku) => haiku && haiku?.artStyle)
+          .filter(Boolean)
+      ]));
+    console.log(">> services.limerick.regenerateLimerickImage", { previousArtStyles });
+
+    artStyle = pickRandom(openai.ART_STYLES.filter((s: string) => !previousArtStyles.includes(s)))
+  }
+
+  // console.log(">> services.limerick.regenerateLimerickImage", { artStyle });
 
   const {
     url: openaiUrl,
@@ -209,8 +229,8 @@ export async function regenerateLimerickImage(user: any, haiku: Haiku, artStyle?
   const savedHaiku = await saveHaiku(user, updatedHaiku);
 
   if (await triggerLimerickShared(savedHaiku)) {
-    haiku = await saveHaiku(user, { 
-      ...savedHaiku, 
+    haiku = await saveHaiku(user, {
+      ...savedHaiku,
       shared: true,
     }, { noVersion: true });
   }
@@ -288,11 +308,11 @@ export async function generateLimerick(user: any, lang?: LanguageType, startingW
     incUserUsage(user, "haikusCreated");
   }
 
-  const createdHaiku = await store.haikus.create(user.id, haiku); 
+  const createdHaiku = await store.haikus.create(user.id, haiku);
 
   if (await triggerLimerickShared(createdHaiku)) {
-    haiku = await saveHaiku(user, { 
-      ...createdHaiku, 
+    haiku = await saveHaiku(user, {
+      ...createdHaiku,
       shared: true,
     }, { noVersion: true });
   }

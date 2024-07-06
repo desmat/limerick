@@ -417,21 +417,32 @@ export async function completeLimerick(poem: string[], language?: string, subjec
   }
 }
 
+export const ART_STYLES = [
+  // "charcoal drawing", 
+  // "pencil drawing",
+  // "Painting",
+  "funny and whimsical cartoon",
+  "funny and whimsical painting",
+  "funny and whimsical painting with large brush strokes, in a style often seen in irish or english pubs",
+  "funny and whimsical quick wobbly sketch, colored hastily with watercolors",
+  // "funny and whimsical hand-drawn courtroom-style sketch or drawing", // dall-e insists on setting the image in a courtroom
+  "funny and whimsical hand-drawn doodling sketch or drawing",
+  "funny and whimsical hand-drawn sketch or drawing with exaggerated features",
+  "funny and whimsical caricature",
+  "funny and whimsical fashion illustration",
+  "funny and whimsical charcoal sketch or drawing",
+  "funny and whimsical pastel sketch or drawing",
+];
+
 export async function generateLimerickImage(limerick?: string, subject?: string, mood?: string, artStyle?: string): Promise<any> {
   console.log(`>> services.openai.generateLimerickImage`, { limerick, subject, mood, artStyle });
-  const imageTypes = [
-    // "charcoal drawing", 
-    // "pencil drawing",
-    // "Painting",
-    "funny and whimsical painting with large brush strokes, in a style often seen in irish or english pubs",
-    "funny and whimsical quick wobbly sketch, colored hastily with watercolors",
-  ];
-  const selectedArtStyle = artStyle || imageTypes[Math.floor(Math.random() * imageTypes.length)];
+
+  const selectedArtStyle = artStyle || ART_STYLES[Math.floor(Math.random() * ART_STYLES.length)];
   const prompt = `
     Please read this limerick: ${limerick}
     Respond with an image that would complement, hint at, and/or capture the essence that limerick.
     Make the art low-key with negative space in the middle, so that the limerick can be overlayed.
-    The image SHOULD NOT contain any writing, letters, numbers or characters of any kind.
+    THIS IS VERY IMPORTANT: the image SHOULD NOT contain ANY writing, letters, numbers or characters of any kind.
     ${selectedArtStyle ? "Additional instructions for the image: " + selectedArtStyle + "." : ""}
   `;
 
