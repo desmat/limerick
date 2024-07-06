@@ -855,7 +855,7 @@ export default function HaikuPoem({
           <div className="onboarding-focus" />
         }
         <div
-          className={`h-full _bg-pink-200 _p-[2.5rem] ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
+          className={`h-full bg-pink-200 _p-[2.5rem] ${canEdit ? "group/edit" : ""} ${saving ? "animate-pulse" : ""}`}
           style={{
             cursor: showcaseMode ? "pointer" : "",
             fontSize,
@@ -865,7 +865,7 @@ export default function HaikuPoem({
             height: showcaseMode ? "min(calc(100dvh - 64px), calc(100vh - 64px))" : "min(calc(100dvh - 128px), calc(100vh - 128px))",
             // minHeight: showcaseMode ? "" : "50vh",
             // maxHeight: showcaseMode ? "" : "calc(100vh - 192px)",
-            margin: showcaseMode ? "32px auto 0 autp" : "64px auto 0 auto",
+            // margin: showcaseMode ? "32px auto 0 autp" : "64px auto 0 auto",
           }}
           onTouchMove={handleTouchMove}
           onMouseLeave={handleMouseUp}
