@@ -312,7 +312,6 @@ export async function generateLimerick({ startingWith, language, previousPoems }
         return {
           role: 'user',
           content: `Other limerick poem: \n${previousPoem.join("\n")}`,
-          temperature: 1,
         }
       })),
       {
@@ -326,6 +325,7 @@ export async function generateLimerick({ startingWith, language, previousPoems }
   // @ts-ignore
   const completion = await openai.chat.completions.create({
     model: languageModel,
+    temperature: 1,
     messages,
   });
 
@@ -394,7 +394,6 @@ export async function completeLimerick(poem: string[], language?: string, subjec
     {
       role: 'user',
       content: prompt,
-      temperature: 1,
     }
   ];
   console.log(`>> services.openai.completeLimerick`, { messages });
@@ -402,8 +401,8 @@ export async function completeLimerick(poem: string[], language?: string, subjec
   // @ts-ignore
   const completion = await openai.chat.completions.create({
     model: languageModel,
+    temperature: 1,
     messages,
-    // temperature: 1,
   });
 
   let response;
