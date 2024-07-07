@@ -501,7 +501,7 @@ export default function HaikuPoem({
             width: "100vw",
             height: "min(100vh, 100dvh)",
             padding: showcaseMode
-              ? "32px 32px"
+              ? "128px 32px"
               : "72px 32px"
           }}
           onTouchMove={handleTouchMove}
