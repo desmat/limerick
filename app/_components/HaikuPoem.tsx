@@ -501,7 +501,7 @@ export default function HaikuPoem({
             width: "100vw",
             height: "min(100vh, 100dvh)",
             padding: showcaseMode
-              ? "192px 32px"
+              ? "32px 32px"
               : "72px 32px"
           }}
           onTouchMove={handleTouchMove}
@@ -567,7 +567,7 @@ export default function HaikuPoem({
                           <div
                             key={i}
                             className={`
-                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[2.2rem] leading-[1.9rem]                            
+                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[4.2rem] tracking-[0rem] spac leading-[5rem]                            
                             ${layout?.alignments[i] == "center"
                                 ? "m-auto"
                                 : layout?.alignments[i] == "end"
@@ -575,6 +575,9 @@ export default function HaikuPoem({
                                   : "my-auto mr-auto"
                               }
                           `}
+                            style={{
+                              wordSpacing: "2.5rem",
+                            }}
                           >
                             <StyledLayers
                               className={`_bg-yellow-200 `}
