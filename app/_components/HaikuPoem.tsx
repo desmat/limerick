@@ -567,7 +567,7 @@ export default function HaikuPoem({
                           <div
                             key={i}
                             className={`
-                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[2.2rem] leading-[1.5rem]                            
+                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[2.2rem] leading-[1.9rem]                            
                             ${layout?.alignments[i] == "center"
                                 ? "m-auto"
                                 : layout?.alignments[i] == "end"
