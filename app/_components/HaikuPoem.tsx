@@ -40,6 +40,7 @@ export default function HaikuPoem({
   styles,
   altStyles,
   fontSize,
+  padding,
   onboardingElement,
   regeneratePoem,
   regenerateImage,
@@ -56,6 +57,7 @@ export default function HaikuPoem({
   styles: any[],
   altStyles?: any[],
   fontSize?: string | undefined,
+  padding?: string | undefined,
   onboardingElement?: string,
   regeneratePoem?: any,
   regenerateImage?: any,
@@ -65,7 +67,7 @@ export default function HaikuPoem({
   regenerating?: boolean,
   updateLayout?: any,
 }) {
-  // console.log('>> app._components.HaikuPoem.render()', { mode, haikuId: haiku?.id, version, status: haiku?.status, popPoem, haiku });
+  // console.log('>> app._components.HaikuPoem.render()', { mode, haikuId: haiku?.id, status: haiku?.status, popPoem, haiku, padding });
   const showcaseMode = mode == "showcase";
   const onboarding = typeof (onboardingElement) == "string"
   const dateCode = moment().format("YYYYMMDD");
@@ -500,7 +502,9 @@ export default function HaikuPoem({
             fontSize,
             width: "100vw",
             height: "min(100vh, 100dvh)",
-            padding: showcaseMode
+            padding: typeof(padding) == "string"
+            ? padding
+            : showcaseMode
               ? "32px 32px"
               : "72px 32px"
           }}

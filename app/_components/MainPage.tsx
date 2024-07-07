@@ -30,6 +30,7 @@ export default function MainPage({
   lang,
   refreshDelay,
   fontSize,
+  padding,
   noOnboarding,
 }: {
   haiku: Haiku,
@@ -38,6 +39,7 @@ export default function MainPage({
   lang?: undefined | LanguageType,
   refreshDelay?: number,
   fontSize?: string | undefined,
+  padding?: string | undefined,
   noOnboarding?: boolean | undefined,
 }) {
   // console.log('>> app.MainPage.render()', { mode, lang, _haiku, _haikudle });
@@ -567,7 +569,7 @@ export default function MainPage({
 
   const changeRefreshDelay = (val: number) => {
     setRefreshDelay(val);
-    window.history.replaceState(null, '', `/${haiku?.id || ""}$?mode=showcase&refreshDelay=${val}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}`);
+    window.history.replaceState(null, '', `/${haiku?.id || ""}$?mode=showcase&refreshDelay=${val}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}${padding ? `&padding=${encodeURIComponent(padding)}` : ""}`);
 
     if (refreshTimeout) {
       clearTimeout(refreshTimeout);
@@ -778,7 +780,7 @@ export default function MainPage({
     // console.log('>> app.page useEffect [haiku?.id, loadingUI, isShowcaseMode, _refreshDelay]', { haiku_id: haiku?.id, loadingUI, isShowcaseMode, _refreshDelay });
 
     if (showcaseMode && !loadingUI && _refreshDelay) {
-      window.history.replaceState(null, '', `/${haiku?.id || ""}?mode=showcase${_refreshDelay ? `&refreshDelay=${_refreshDelay}` : ""}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}`);
+      window.history.replaceState(null, '', `/${haiku?.id || ""}?mode=showcase${_refreshDelay ? `&refreshDelay=${_refreshDelay}` : ""}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}${padding ? `&padding=${encodeURIComponent(padding)}` : ""}`);
       setRefreshTimeout(setTimeout(loadHaiku, _refreshDelay));
     }
 
@@ -787,7 +789,7 @@ export default function MainPage({
     const retryInterval = loadingUI && showcaseMode && setInterval(() => {
       // console.log('>> app.page useEffect [loadingUI, isShowcaseMode] forcing refresh after waiting too long');
       setLoadingUI(false);
-      document.location.href = `/${haiku?.id || ""}?mode=showcase${_refreshDelay ? `&refreshDelay=${_refreshDelay}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}` : ""}`;
+      document.location.href = `/${haiku?.id || ""}?mode=showcase${_refreshDelay ? `&refreshDelay=${_refreshDelay}${fontSize ? `&fontSize=${encodeURIComponent(fontSize)}` : ""}${padding ? `&padding=${encodeURIComponent(padding)}` : ""}` : ""}`;
     }, 10000);
 
     return () => {
@@ -938,6 +940,7 @@ export default function MainPage({
           styles={textStyles}
           altStyles={altTextStyles}
           fontSize={fontSize}
+          padding={padding}
           popPoem={haikudleMode && haikudleSolvedJustNow}
           regenerating={regenerating}
           onboardingElement={onboardingElement}
