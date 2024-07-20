@@ -570,14 +570,15 @@ export default function HaikuPoem({
                         {!spacer && i < currentPoem.length &&
                           <div
                             key={i}
+                            // NOTE: leading uses EM units because fontSize can be provided as a param
                             className={`
-                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[3.8rem] leading-[1.9rem] tracking-[0rem]
-                            ${layout?.alignments[i] == "center"
-                                ? "m-auto"
-                                : layout?.alignments[i] == "end"
-                                  ? "my-auto ml-auto"
-                                  : "my-auto mr-auto"
-                              }
+                              _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all leading-[1.0em] tracking-[0rem]
+                              ${layout?.alignments[i] == "center"
+                                  ? "m-auto"
+                                  : layout?.alignments[i] == "end"
+                                    ? "my-auto ml-auto"
+                                    : "my-auto mr-auto"
+                                }
                           `}
                           >
                             <StyledLayers
@@ -592,7 +593,7 @@ export default function HaikuPoem({
                               >
                                 {/* set the width while editing */}
                                 <div
-                                  className={`poem-line-input poem-line-${i} _bg-orange-400 flex flex-row flex-wrap items-center md:gap-[1.2rem] gap-[0.4rem] _opacity-50 md:min-h-[3.5rem] sm:min-h-[3rem] min-h-[2.5rem] 
+                                  className={`poem-line-input poem-line-${i} _bg-orange-400 flex flex-row flex-wrap items-center md:gap-[0.4rem] gap-[0.4rem] _opacity-50 md:min-h-[3.5rem] sm:min-h-[3rem] min-h-[2.5rem] 
                                     ${canUpdateLayout
                                       ? "cursor-row-resize"
                                       : canUpdateLayout
