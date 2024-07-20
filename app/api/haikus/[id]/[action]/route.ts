@@ -5,7 +5,7 @@ import { userUsage } from '@/services/usage';
 import { userSession } from '@/services/users';
 import { USAGE_LIMIT } from '@/types/Usage';
 import { regenerateLimerickImage, regenerateLimerickPoem } from '@/services/limericks';
-import { triggerLimerickShared } from '@/services/webhooks';
+import { triggerLimerickShared, triggerPrepareLimerickStory } from '@/services/webhooks';
 
 export const maxDuration = 300;
 // export const dynamic = 'force-dynamic';
@@ -54,8 +54,8 @@ export async function POST(
     if (!haiku.shared) {
       const ret = await triggerLimerickShared(haiku);
       if (ret) {
-        haiku = await saveHaiku(user, { 
-          ...haiku, 
+        haiku = await saveHaiku(user, {
+          ...haiku,
           shared: true,
         }, { noVersion: true });
       }
@@ -63,31 +63,48 @@ export async function POST(
       console.log(`>> app.api.haiku.[id].[action].POST: already shared`, { action: params.action, haiku });
     }
 
-    return NextResponse.json({ haiku });    
+    return NextResponse.json({ haiku });
+  } else if (params.action == "prepareLimerickStory") {
+    const [data, { user }] = await Promise.all([
+      request.json(),
+      userSession(request),
+    ]);
+    let haiku = await getHaiku(user, params.id);
+
+    if (!haiku) {
+      return NextResponse.json(
+        { success: false, message: 'haiku not found' },
+        { status: 404 }
+      );
+    }
+
+    const ret = await triggerPrepareLimerickStory(haiku);
+
+    return NextResponse.json({ haiku });
   } else if (params.action == "regenerate") {
     let { haiku, part, artStyle }: any = await request.json();
     part = part || "poem";
-  
+
     console.log(`>> app.api.haiku.[id].[action].POST`, { action: params.action, haiku, part });
 
     const { user } = await userSession(request);
     let reachedUsageLimit = false; // actually _will_ reach usage limit shortly
-  
+
     if (!user.isAdmin) {
       const h = await getHaiku(user, haiku.id);
-      
+
       // only owners and admins can update
       if (!user.isAdmin && h.createdBy != haiku.createdBy) {
         return NextResponse.json(
           { success: false, message: 'authorization failed' },
           { status: 403 }
-        );  
+        );
       }
-  
+
       const usage = await userUsage(user);
       const { haikusRegenerated } = usage[moment().format("YYYYMMDD")];
       console.log('>> app.api.haiku.regenerate.POST', { haikusRegenerated, usage });
-  
+
       if ((haikusRegenerated || 0) >= USAGE_LIMIT.DAILY_REGENERATE_HAIKU) {
         return NextResponse.json(
           { success: false, message: 'exceeded daily limit' },
@@ -97,15 +114,15 @@ export async function POST(
         reachedUsageLimit = true;
       }
     }
-  
-    if (!["image", "poem"].includes(part))throw `Regenerate part not supported: ${part}`;
-  
+
+    if (!["image", "poem"].includes(part)) throw `Regenerate part not supported: ${part}`;
+
     const updatedHaiku = part == "image"
-    // ? await regenerateHaikuImage(user, haiku, artStyle)
-    // : await regenerateHaikuPoem(user, haiku);
-    ? await regenerateLimerickImage(user, haiku, artStyle)
-    : await regenerateLimerickPoem(user, haiku);
-    
+      // ? await regenerateHaikuImage(user, haiku, artStyle)
+      // : await regenerateHaikuPoem(user, haiku);
+      ? await regenerateLimerickImage(user, haiku, artStyle)
+      : await regenerateLimerickPoem(user, haiku);
+
     return NextResponse.json({ haiku: updatedHaiku, reachedUsageLimit });
   } else if (params.action == "updateImage") {
     const [{ value: url }, { user }] = await Promise.all([
@@ -118,9 +135,9 @@ export async function POST(
       return NextResponse.json(
         { success: false, message: 'authorization failed' },
         { status: 403 }
-      );  
+      );
     }
-        
+
     if (!url) {
       return NextResponse.json(
         { success: false, message: 'image url not provided' },
@@ -146,7 +163,7 @@ export async function POST(
     // console.log(">> app.api.haiku.[id].[action].POST", { url, fileExtensionMatch });
     const updatedHaiku = await updateHaikuImage(user, haiku, imageBuffer, fileExtensionMatch ? `image/${fileExtensionMatch[1]}` : undefined);
     console.log(`>> app.api.haiku.[id].[action].POST`, { updatedHaiku });
-    
+
     return NextResponse.json({ haiku: updatedHaiku });
   } else if (params.action == "uploadImage") {
     const [formData, { user }] = await Promise.all([
@@ -159,9 +176,9 @@ export async function POST(
       return NextResponse.json(
         { success: false, message: 'authorization failed' },
         { status: 403 }
-      );  
+      );
     }
-    
+
     // console.log(`>> app.api.haiku.[id].[action].POST`, { action: params.action, formData });
 
     const parts: File[] = [];
@@ -181,7 +198,7 @@ export async function POST(
     const imageBuffer = Buffer.from(await parts[0].arrayBuffer());
     const updatedHaiku = await updateHaikuImage(user, haiku, imageBuffer, parts[0].type);
     console.log(`>> app.api.haiku.[id].[action].POST`, { updatedHaiku });
-    
+
     return NextResponse.json({ haiku: updatedHaiku });
   } else {
     return NextResponse.json(

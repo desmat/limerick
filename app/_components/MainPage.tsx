@@ -721,6 +721,10 @@ export default function MainPage({
     });
   }
 
+  const publishSocialImgs = () => {
+    haikuAction(haikuId, "prepareLimerickStory");
+  }
+
   useEffect(() => {
     // console.log('>> app.page useEffect []', { user, haikudleReady, previousDailyHaikudleId, userGeneratedHaiku, preferences: user?.preferences, test: !user?.preferences?.onboarded });
     // @ts-ignore
@@ -911,6 +915,7 @@ export default function MainPage({
         onUploadImage={!haiku?.error && uploadImage}
         onUpdateImage={!haiku?.error && updateHaikuImage}
         onCycleLayout={!haiku?.error && (haiku?.createdBy && haiku?.createdBy == user?.id || user?.isAdmin) && cycleLayout}
+        onPublishSocialImgs={!haiku?.error && (haiku?.createdBy && haiku?.createdBy == user?.id || user?.isAdmin) && publishSocialImgs}
       />
 
       {isPuzzleMode &&

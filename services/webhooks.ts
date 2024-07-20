@@ -28,6 +28,33 @@ export async function triggerLimerickShared(haiku: Haiku) {
   return true;
 }
 
+export async function triggerPrepareLimerickStory(haiku: Haiku) {
+  console.log('>> app.services.webhooks.triggerPrepareLimerickStory', { haiku });
+
+  const url = process.env.WEBHOOK_PREPARE_LIMERICK_STORY;
+  if (!url) return;
+  
+  const res = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify(haiku),
+  });
+
+  if (res.status != 200) {
+    console.error(">> app.services.webhooks.triggerPrepareLimerickStory ERROR", { res });
+    return false;
+  }
+
+  console.log('>> app.services.webhooks.triggerPrepareLimerickStory', { res });
+
+  // const ret = await res.json();
+  // console.log('>> app.services.webhooks.triggerLimerickShared', { ret });
+
+  const ret = await res.text();
+  console.log('>> app.services.webhooks.triggerPrepareLimerickStory', { ret });
+
+  return true;
+}
+
 export async function triggerDailyHaikuSaved(dailyHaiku: DailyHaiku) {
   console.log('>> app.services.webhooks.triggerDailyHaikuSaved', { dailyHaiku });
 
