@@ -15,6 +15,7 @@ export default function HaikuPage({
   styles,
   altStyles,
   fontSize,
+  padding,
   popPoem,
   regenerating,
   loading,
@@ -31,6 +32,7 @@ export default function HaikuPage({
   styles: any[],
   altStyles?: any[],
   fontSize?: string | undefined,
+  padding?: string | undefined,
   popPoem?: boolean,
   regenerating?: boolean,
   loading?: boolean,
@@ -73,6 +75,7 @@ export default function HaikuPage({
               styles={styles}
               altStyles={altStyles}
               fontSize={fontSize ? fontSize : showcaseMode ? "110%" : undefined}
+              padding={padding}
               onboardingElement={onboardingElement}
               regeneratePoem={regeneratePoem}
               regenerateImage={regenerateImage}

@@ -66,6 +66,7 @@ export default async function Page({
   let mode = (searchParams && searchParams["mode"] || process.env.EXPERIENCE_MODE) as ExperienceMode || "haiku";
   const refreshDelay = searchParams && Number(searchParams["refreshDelay"]);
   const fontSize = searchParams && searchParams["fontSize"];
+  const padding = searchParams && searchParams["padding"];
   const noOnboarding = searchParams && searchParams["noOnboarding"] == "true";
   // console.log('>> app.[[...slugs]].page.render()', { slug: params.slug, searchParams, id, version, lang, mode });
 
@@ -134,6 +135,7 @@ export default async function Page({
             styles={textStyles}
             altStyles={altTextStyles}
             fontSize={fontSize}
+            padding={padding}
             loading={mode == "haikudle" && !haikudle.previousDailyHaikudleId}
           />
         </div>
@@ -147,6 +149,7 @@ export default async function Page({
           lang={lang}
           refreshDelay={refreshDelay}
           fontSize={fontSize}
+          padding={padding}
           noOnboarding={noOnboarding}
         />
       </NoSsr>

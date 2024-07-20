@@ -40,6 +40,7 @@ export default function HaikuPoem({
   styles,
   altStyles,
   fontSize,
+  padding,
   onboardingElement,
   regeneratePoem,
   regenerateImage,
@@ -56,6 +57,7 @@ export default function HaikuPoem({
   styles: any[],
   altStyles?: any[],
   fontSize?: string | undefined,
+  padding?: string | undefined,
   onboardingElement?: string,
   regeneratePoem?: any,
   regenerateImage?: any,
@@ -65,7 +67,7 @@ export default function HaikuPoem({
   regenerating?: boolean,
   updateLayout?: any,
 }) {
-  // console.log('>> app._components.HaikuPoem.render()', { mode, haikuId: haiku?.id, version, status: haiku?.status, popPoem, haiku });
+  // console.log('>> app._components.HaikuPoem.render()', { mode, haikuId: haiku?.id, status: haiku?.status, popPoem, haiku, padding });
   const showcaseMode = mode == "showcase";
   const onboarding = typeof (onboardingElement) == "string"
   const dateCode = moment().format("YYYYMMDD");
@@ -500,7 +502,9 @@ export default function HaikuPoem({
             fontSize,
             width: "100vw",
             height: "min(100vh, 100dvh)",
-            padding: showcaseMode
+            padding: typeof(padding) == "string"
+            ? padding
+            : showcaseMode
               ? "32px 32px"
               : "72px 32px"
           }}
@@ -566,13 +570,14 @@ export default function HaikuPoem({
                         {!spacer && i < currentPoem.length &&
                           <div
                             key={i}
+                            // NOTE: leading uses EM units because fontSize can be provided as a param
                             className={`
-                            _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all md:leading-[2.2rem] leading-[1.5rem]                            
-                            ${layout?.alignments[i] == "center"
-                                ? "m-auto"
-                                : layout?.alignments[i] == "end"
-                                  ? "my-auto ml-auto"
-                                  : "my-auto mr-auto"
+                              _bg-pink-200 line-container flex md:my-[0.05rem] sm:my-[0.03rem] my-[0.15rem] _transition-all leading-[1.0em] tracking-[0rem]
+                              ${layout?.alignments[i] == "center"
+                                  ? "m-auto"
+                                  : layout?.alignments[i] == "end"
+                                    ? "my-auto ml-auto"
+                                    : "my-auto mr-auto"
                               }
                           `}
                           >
@@ -588,7 +593,7 @@ export default function HaikuPoem({
                               >
                                 {/* set the width while editing */}
                                 <div
-                                  className={`poem-line-input poem-line-${i} _bg-orange-400 flex flex-row flex-wrap items-center gap-[0.5rem] _opacity-50 md:min-h-[3.5rem] sm:min-h-[3rem] min-h-[2.5rem] 
+                                  className={`poem-line-input poem-line-${i} _bg-orange-400 flex flex-row flex-wrap items-center md:gap-[0.4rem] gap-[0.4rem] _opacity-50 md:min-h-[3.5rem] sm:min-h-[3rem] min-h-[2.5rem] 
                                     ${canUpdateLayout
                                       ? "cursor-row-resize"
                                       : canUpdateLayout
