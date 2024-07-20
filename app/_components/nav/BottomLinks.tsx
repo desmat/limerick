@@ -14,6 +14,7 @@ import { FaRandom } from "react-icons/fa";
 import { RiImageFill, RiImageAddLine, RiImageEditLine, RiImageLine } from "react-icons/ri";
 import { TbSocial } from "react-icons/tb";
 import { BsFileImage, BsCardImage } from "react-icons/bs";
+import { FaImages } from "react-icons/fa";
 import useUser from '@/app/_hooks/user';
 import { ExperienceMode } from '@/types/ExperienceMode';
 import { Haiku } from '@/types/Haiku';
@@ -99,6 +100,7 @@ export default function BottomLinks({
   onLikeHaiku,
   onUploadImage,
   onUpdateImage,
+  onPublishSocialImgs,
 }: {
   mode: ExperienceMode,
   haiku?: Haiku,
@@ -118,6 +120,7 @@ export default function BottomLinks({
   onLikeHaiku?: any,
   onUploadImage?: any,
   onUpdateImage?: any,
+  onPublishSocialImgs?: any,
 }) {
   // console.log("BottomLinks", { lang, haiku })
   const router = useRouter();
@@ -309,6 +312,20 @@ export default function BottomLinks({
                   <FaCopy className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem] ml-[-0.1rem]" />
                 </PopOnClick>
               </div>,
+              <Link
+                key="publish-social-img"
+                href={`/${haiku?.id}`}
+                title="Publish social images"
+                className={haiku?.id && onPublishSocialImgs ? "cursor-pointer" : "opacity-40"}
+                onClick={(e: any) => {
+                  e.preventDefault();
+                  haiku?.id && onPublishSocialImgs && onPublishSocialImgs()
+                }}
+              >
+                <PopOnClick color={haiku?.bgColor} disabled={!haiku?.id || !onCopyLink}>
+                  <FaImages className="text-[1.5rem] md:text-[1.75rem] p-[0.2rem]" />
+                </PopOnClick>
+              </Link>,
             ]}
           />
         }
