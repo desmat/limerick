@@ -578,7 +578,7 @@ export default function HaikuPoem({
                                   : layout?.alignments[i] == "end"
                                     ? "my-auto ml-auto"
                                     : "my-auto mr-auto"
-                                }
+                              }
                           `}
                           >
                             <StyledLayers

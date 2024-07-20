@@ -16,11 +16,8 @@ export async function POST(
 ) {
   console.log(`>> app.api.haiku.[id].[action].POST`, { params });
 
-  if (params.action == "like") {
-    const [data, { user }] = await Promise.all([
-      request.json(),
-      userSession(request),
-    ]);
+  if (["like", "un-like"].includes(params.action)) {
+    const { user } = await userSession(request);
     const haiku = await getHaiku(user, params.id);
 
     if (!haiku) {
@@ -36,7 +33,7 @@ export async function POST(
 
     const savedUserHaiku = await saveUserHaiku(user, {
       ...userHaiku,
-      likedAt: data.value ? moment().valueOf() : undefined,
+      likedAt: params.action == "like" ? moment().valueOf() : undefined,
     });
 
     return NextResponse.json({ haiku, userHaiku: savedUserHaiku });

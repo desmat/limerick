@@ -615,11 +615,7 @@ export default function MainPage({
     if (haikudleMode && haikudleSolved || !haikudleMode) {
       navigator.clipboard.writeText(formatHaikuText(haikudleSolved ? solvedHaikudleHaiku : haiku, mode));
       plainAlert(`Limerick copied to clipboard`, { closeDelay: 750 });
-      haikuAction(haikuId, "share");
-      trackEvent("haiku-poem-copied", {
-        userId: user?.id,
-        id: haiku.id,
-      });
+      haikuAction(haikuId, "share", "poem-copied");
     }
   }
 
@@ -638,11 +634,7 @@ export default function MainPage({
       const version = (haiku.deprecated || haiku.deprecatedAt) && haiku.version;
       navigator.clipboard.writeText(`https://limericks.ai/${haiku.id}${version ? `:${version}` : ""}`);
       plainAlert(`Link to this limerick copied to clipboard`, { closeDelay: 750 });
-      haikuAction(haikuId, "share");
-      trackEvent("haiku-shared", {
-        userId: user?.id,
-        id: haiku.id,
-      });
+      haikuAction(haikuId, "share", "url-copied");
     }
   }
 
@@ -652,7 +644,7 @@ export default function MainPage({
     const userHaiku = userHaikus[haiku.id];
     const value = userHaiku?.likedAt ? undefined : moment().valueOf();
 
-    haikuAction(haikuId, "like", value).then((haiku: Haiku) => {
+    haikuAction(haikuId, userHaiku?.likedAt ? "un-like" : "like").then((haiku: Haiku) => {
       setHaiku(haiku);
     })
   }
