@@ -45,9 +45,12 @@ export default function HaikuPage({
 }) {
   // console.log('>> app._components.HaikuPage.render()', { loading, mode, id: haiku?.id, poem: haiku?.poem, popPoem, haiku });
   const showcaseMode = mode == "showcase";
+  const socialImgMode = mode == "social-img";
   // const [user] = useUser((state: any) => [state.user]);
   const blurValue = loading ? 60 : 0;
   const saturateValue = loading ? 0.6 : 1;
+  const bgImagePosition = socialImgMode && haiku?.layout?.socialImg?.custom?.bgImagePosition; // "center 0%" for example to push down
+  const bgImageSize = socialImgMode && haiku?.layout?.socialImg?.custom?.bgImageSize; //"calc(100% + 300px)" for example, more pixel more down
 
   return (
     <div>
@@ -55,8 +58,8 @@ export default function HaikuPage({
         className="absolute top-0 left-0 _bg-pink-200 min-w-[100vw] min-h-[100vh] z-0 opacity-100"
         style={{
           backgroundImage: `url("${haiku?.bgImage}")`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
+          backgroundPosition: bgImagePosition || "center",
+          backgroundSize: bgImageSize || "cover",
           filter: `brightness(1.2) blur(${blurValue}px) saturate(${saturateValue}) `,
           transition: loading ? "filter 0.5s ease-out" : "filter 0.1s ease-out",
         }}
