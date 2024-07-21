@@ -246,7 +246,7 @@ export function NavOverlay({
           }
           {onCycleLayout &&
             <div
-              className="_bg-blue-200 w-[calc(80vw)] h-[3rem] left-[50%] translate-x-[-50%] top-0 fixed cursor-row-resize z-40"
+              className="_bg-blue-200 w-[calc(80vw)] h-[4rem] left-[50%] translate-x-[-50%] top-0 fixed cursor-row-resize z-40"
               onClick={(e: any) => {
                 onCycleLayout(true);
               }}
@@ -255,7 +255,7 @@ export function NavOverlay({
           }
           {onCycleLayout &&
             <div
-              className="_bg-blue-200 w-[calc(80vw)] h-[3rem] left-[50%] translate-x-[-50%] bottom-0 fixed cursor-row-resize z-40"
+              className="_bg-blue-200 w-[calc(80vw)] h-[4rem] left-[50%] translate-x-[-50%] bottom-0 fixed cursor-row-resize z-40"
               onClick={(e: any) => {
                 onCycleLayout(false);
               }}

@@ -17,7 +17,7 @@ import trackEvent from '@/utils/trackEvent';
 import { ExperienceMode } from '@/types/ExperienceMode';
 import { Haikudle } from '@/types/Haikudle';
 import { LanguageType } from '@/types/Languages';
-import { defaultPresetLayout, presetLayouts } from '@/types/Layout';
+import { defaultPresetLayout, defaultSocialImgPresetLayout, presetLayouts, socialImgPresetLayouts } from '@/types/Layout';
 import { haikuGeneratedOnboardingSteps, haikuMultiLanguageSteps, haikuOnboardingSteps, haikuPromptSteps, haikudleGotoHaikuGenius, haikudleOnboardingSteps, notShowcase_notOnboardedFirstTime_onboardedShowcase, showcase_notOnboardedFirstTime, showcase_onboardedFirstTime, showcase_onboardedFirstTime_admin, limerickPromptSteps } from '@/types/Onboarding';
 import { User } from '@/types/User';
 import HaikudlePage from './HaikudlePage';
@@ -686,39 +686,69 @@ export default function MainPage({
     then && then(ret);
   }, 500);
 
-  const cycleLayout = async (previous?: boolean) => {
-    // console.log('>> app.page.cycleLayout()', { previous });
+  const cycleLayout = async (mode: string, previous?: boolean) => {
+    // console.log('>> app.page.cycleLayout()', { mode, previous, layout: haiku?.layout });
 
-    let preset = (typeof (haiku?.layout?.preset) == "number"
-      ? haiku?.layout?.preset
-      : defaultPresetLayout)
-      + (previous ? -1 : 1);
-    // console.log('>> app.page.cycleLayout()', { preset });
+    let updatedHaiku;
 
-    if (preset >= presetLayouts.length) preset = 0;
-    if (preset < 0) preset = presetLayouts.length - 1;
-    // console.log('>> app.page.cycleLayout()', { preset });
+    if (mode == "social-img") {
+      let preset = (typeof (haiku?.layout?.socialImg?.preset) == "number"
+        ? haiku?.layout?.socialImg?.preset
+        : defaultSocialImgPresetLayout)
+        + (previous ? -1 : 1);
+      // console.log('>> app.page.cycleLayout()', { mode, preset });
 
-    const updatedHaiku = {
-      ...haiku,
-      layout: {
-        ...haiku.layout,
-        ...{
-          preset,
-          custom: presetLayouts[preset]
-        },
-      }
-    };
+      if (preset >= socialImgPresetLayouts.length) preset = 0;
+      if (preset < 0) preset = socialImgPresetLayouts.length - 1;
+      // console.log('>> app.page.cycleLayout()', { mode, preset });
 
-    setHaiku(updatedHaiku);
-    debounceSaveHaiku(updatedHaiku, (haiku: Haiku) => {
-      // console.log('>> app.page.cycleLayout()', { savedHaiku: haiku });
-      // plainAlert("Layout adjustments saved", { closeDelay: 750 });
-      trackEvent("layout-updated", {
-        userId: user?.id,
-        id: haiku?.id,
+      updatedHaiku = {
+        ...haiku,
+        layout: {
+          ...haiku.layout,
+          socialImg: {
+            ...haiku.layout?.socialImg,
+            preset,
+            custom: socialImgPresetLayouts[preset]
+          }
+        }
+      };
+
+      console.log('>> app.page.cycleLayout()', { updatedHaiku });
+    } else {
+      let preset = (typeof (haiku?.layout?.preset) == "number"
+        ? haiku?.layout?.preset
+        : defaultPresetLayout)
+        + (previous ? -1 : 1);
+      // console.log('>> app.page.cycleLayout()', { preset });
+
+      if (preset >= presetLayouts.length) preset = 0;
+      if (preset < 0) preset = presetLayouts.length - 1;
+      // console.log('>> app.page.cycleLayout()', { preset });
+
+      updatedHaiku = {
+        ...haiku,
+        layout: {
+          ...haiku.layout,
+          ...{
+            preset,
+            custom: presetLayouts[preset]
+          },
+        }
+      };
+    }
+
+    if (updatedHaiku) {
+      setHaiku(updatedHaiku);
+      debounceSaveHaiku(updatedHaiku, (haiku: Haiku) => {
+        // console.log('>> app.page.cycleLayout()', { savedHaiku: haiku });
+        // plainAlert("Layout adjustments saved", { closeDelay: 750 });
+        trackEvent("layout-updated", {
+          userId: user?.id,
+          id: haiku?.id,
+        });
       });
-    });
+    }
   }
 
   useEffect(() => {
@@ -910,7 +940,11 @@ export default function MainPage({
         onLikeHaiku={!haiku?.error && (haikudleMode && haikudleSolved || !haikudleMode) && likeHaiku}
         onUploadImage={!haiku?.error && uploadImage}
         onUpdateImage={!haiku?.error && updateHaikuImage}
-        onCycleLayout={!haiku?.error && (haiku?.createdBy && haiku?.createdBy == user?.id || user?.isAdmin) && cycleLayout}
+        onCycleLayout={(previous?: boolean) => {
+          if (!haiku?.error && (haiku?.createdBy && haiku?.createdBy == user?.id || user?.isAdmin)) {
+            cycleLayout(mode, previous);
+          }
+        }}
       />
 
       {isPuzzleMode &&

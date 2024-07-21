@@ -129,3 +129,57 @@ export const presetLayouts: Layout[] = [
     alignments: [r, r, r, r, r]
   },
 ];
+
+export type SocialImgLayout = {
+  bgImagePosition?: string,
+  bgImageSize?: string,
+};
+
+export const defaultSocialImgPresetLayout = 5;
+
+export const socialImgPresetLayouts: SocialImgLayout[] = [
+  {
+    bgImagePosition: "center 0%",
+    bgImageSize: "calc(100% + 1024px)",
+  },
+  {
+    bgImagePosition: "center 0%",
+    bgImageSize: "calc(100% + 512px)",
+  },
+  {
+    bgImagePosition: "center 0%",
+    bgImageSize: "calc(100% + 256px)",
+  },
+  {
+    bgImagePosition: "center 0%",
+    bgImageSize: "calc(100% + 128px)",
+  },
+  {
+    bgImagePosition: "center 0%",
+    bgImageSize: "calc(100% + 56px)",
+  },
+  {
+    bgImagePosition: "",
+    bgImageSize: "",
+  },
+  {
+    bgImagePosition: "center 100%",
+    bgImageSize: "calc(100% + 56px)",
+  },
+  {
+    bgImagePosition: "center 100%",
+    bgImageSize: "calc(100% + 128px)",
+  },
+  {
+    bgImagePosition: "center 100%",
+    bgImageSize: "calc(100% + 256px)",
+  },
+  {
+    bgImagePosition: "center 100%",
+    bgImageSize: "calc(100% + 512px)",
+  },
+  {
+    bgImagePosition: "center 100%",
+    bgImageSize: "calc(100% + 1024px)",
+  },
+];
