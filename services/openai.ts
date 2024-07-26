@@ -423,9 +423,9 @@ export const ART_STYLES = [
   "funny and whimsical cartoon",
   "funny and whimsical painting",
   "funny and whimsical painting with large brush strokes, in a style often seen in irish or english pubs",
-  "funny and whimsical quick wobbly sketch, colored hastily with watercolors",
+  "funny and whimsical quick wobbly sketch, colored hastily with watercolors on a white background",
   // "funny and whimsical hand-drawn courtroom-style sketch or drawing", // dall-e insists on setting the image in a courtroom
-  "funny and whimsical hand-drawn doodling sketch or drawing",
+  "funny and whimsical hand-drawn doodling sketch or drawing on a white background",
   "funny and whimsical hand-drawn sketch or drawing with exaggerated features",
   "funny and whimsical caricature",
   "funny and whimsical fashion illustration",
