@@ -290,7 +290,7 @@ export async function generateLimerick({ startingWith, language, previousPoems }
   }
 
   const systemPrompt = `
-    Given the starting words (if provided) please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
+    Given the starting words or lines (/ to separate lines), if provided, please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
     Make sure the limerick include innuendos.
     Other limerick poems may be provided, if so please ensure that this new limerick poem is different from the previous ones.
     Also include in the response, in fewest number of words, a title for this limeric. 
@@ -311,7 +311,7 @@ export async function generateLimerick({ startingWith, language, previousPoems }
       ...((previousPoems || []).map((previousPoem: []) => {
         return {
           role: 'user',
-          content: `Other limerick poem: \n${previousPoem.join("\n")}`,
+          content: `Other limerick poem: ${previousPoem.join("/")}`,
         }
       })),
       {
