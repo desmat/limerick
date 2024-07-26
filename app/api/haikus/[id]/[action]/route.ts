@@ -164,6 +164,9 @@ export async function POST(
     const updatedHaiku = await updateHaikuImage(user, haiku, imageBuffer, fileExtensionMatch ? `image/${fileExtensionMatch[1]}` : undefined);
     console.log(`>> app.api.haiku.[id].[action].POST`, { updatedHaiku });
 
+    const triggerLimerickSharedRet = await triggerLimerickShared(haiku);
+    console.log(`>> app.api.haiku.[id].[action].POST`, { triggerLimerickSharedRet });
+
     return NextResponse.json({ haiku: updatedHaiku });
   } else if (params.action == "uploadImage") {
     const [formData, { user }] = await Promise.all([
@@ -198,6 +201,9 @@ export async function POST(
     const imageBuffer = Buffer.from(await parts[0].arrayBuffer());
     const updatedHaiku = await updateHaikuImage(user, haiku, imageBuffer, parts[0].type);
     console.log(`>> app.api.haiku.[id].[action].POST`, { updatedHaiku });
+
+    const triggerLimerickSharedRet = await triggerLimerickShared(haiku);
+    console.log(`>> app.api.haiku.[id].[action].POST`, { triggerLimerickSharedRet });
 
     return NextResponse.json({ haiku: updatedHaiku });
   } else {
