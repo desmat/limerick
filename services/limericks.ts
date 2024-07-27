@@ -5,6 +5,7 @@ import { Store } from "@/types/Store";
 import { pickRandom, uuid } from '@/utils/misc';
 import { Haiku } from '@/types/Haiku';
 import { LanguageType, supportedLanguages } from '@/types/Languages';
+import * as apify from './apify';
 import * as openai from './openai';
 import { incUserUsage } from './usage';
 import { getHaiku, saveHaiku } from './haikus';
@@ -16,43 +17,6 @@ import(`@/services/stores/${process.env.STORE_TYPE}`)
     console.log(">> services.limericks.init", { s });
     store = new s.create();
   });
-
-export async function _regenerateLimerickPoem(user: any, haiku: Haiku): Promise<Haiku> {
-  const lang = (haiku.lang || "en") as LanguageType;
-  const startingWith = haiku.startingWith;
-  console.log(">> services.limerick.regenerateLimerickPoem", { lang, startingWith, user });
-  const language = supportedLanguages[lang].name;
-
-  const {
-    prompt: poemPrompt,
-    languageModel,
-    response: {
-      limerick: poem,
-      title,
-    }
-  } = await openai.generateLimerick({ language, startingWith });
-  console.log(">> services.limerick.regenerateLimerick", { poem, title, poemPrompt });
-
-  // delete corresponding haikudle 
-  // getHaikudle(user, haiku.id).then(async (haikudle: Haikudle) => {
-  //   console.log(">> services.limerick.regenerateHaikuPoem", { haikudle });
-  //   if (haikudle) {
-  //     deleteHaikudle(user, haikudle.id);
-  //   }
-  // });
-
-  // if (!user.isAdmin) {
-  //   incUserUsage(user, "haikusRegenerated");
-  // }
-
-  return saveHaiku(user, {
-    ...haiku,
-    poem,
-    theme: title,
-    poemPrompt,
-    languageModel,
-  });
-}
 
 export async function completeLimerickPoem(user: any, haiku: Haiku): Promise<Haiku> {
   const lang = (haiku.lang || "en") as LanguageType;
@@ -109,6 +73,7 @@ export async function completeLimerickPoem(user: any, haiku: Haiku): Promise<Hai
 export async function regenerateLimerickPoem(user: any, haiku: Haiku): Promise<Haiku> {
   const lang = (haiku.lang || "en") as LanguageType;
   const startingWith = haiku.startingWith;
+  const context = haiku.context;
   console.log(">> services.limericks.regenerateLimerickPoem", { lang, startingWith, user });
   const language = supportedLanguages[lang].name;
 
@@ -133,7 +98,7 @@ export async function regenerateLimerickPoem(user: any, haiku: Haiku): Promise<H
       limerick: poem,
       title,
     }
-  } = await openai.generateLimerick({ language, startingWith, previousPoems: previousPoems.slice(0, 4) });
+  } = await openai.generateLimerick({ language, startingWith, previousPoems: previousPoems.slice(0, 4), context });
   console.log(">> services.limerick.regenerateLimerick", { poem, title, poemPrompt });
 
   // delete corresponding haikudle 
@@ -186,7 +151,7 @@ export async function regenerateLimerickImage(user: any, haiku: Haiku, artStyle?
     prompt: imagePrompt,
     artStyle: selectedArtStyle,
     imageModel,
-  } = await openai.generateLimerickImage(haiku.poem.join(" / "), undefined, undefined, artStyle);
+  } = await openai.generateLimerickImage(haiku.poem.join(" / "), { artStyle, context: haiku.context });
 
   const imageRet = await fetch(openaiUrl);
   // console.log(">> services.limerick.regenerateLimerickImage", { imageRet });
@@ -239,10 +204,27 @@ export async function regenerateLimerickImage(user: any, haiku: Haiku, artStyle?
 }
 
 
-export async function generateLimerick(user: any, lang?: LanguageType, startingWith?: string): Promise<Haiku> {
-  console.log(">> services.limerick.generateLimerick", { lang, startingWith, user });
+export async function generateLimerick(user: any, lang?: LanguageType, startingWith?: string, contextUrl?: string): Promise<Haiku> {
+  console.log(">> services.limerick.generateLimerick", { lang, startingWith, contextUrl, user });
   const language = supportedLanguages[lang || "en"].name;
   const debugOpenai = process.env.OPENAI_API_KEY == "DEBUG";
+
+  let context;
+  let contextPrompt;
+
+  if (contextUrl) {
+    const contextText = await apify.crawl({ url: contextUrl });
+    console.log(">> services.limerick.generateLimerick", { contextText });
+
+    const {
+      prompt,
+      // languageModel,
+      response
+    } = await openai.generateContext({ language, text: contextText });
+    contextPrompt = prompt;
+    context = response;
+    console.log(">> services.limerick.generateLimerick", { context });
+  }
 
   const {
     prompt: poemPrompt,
@@ -251,7 +233,7 @@ export async function generateLimerick(user: any, lang?: LanguageType, startingW
       limerick: poem,
       title,
     }
-  } = await openai.generateLimerick({ language, startingWith });
+  } = await openai.generateLimerick({ language, startingWith, context });
   console.log(">> services.limerick.generateLimerick", { poem, title, poemPrompt });
 
   const {
@@ -259,7 +241,9 @@ export async function generateLimerick(user: any, lang?: LanguageType, startingW
     prompt: imagePrompt,
     artStyle: selectedArtStyle,
     imageModel,
-  } = await openai.generateLimerickImage(poem.join(" / ")); // TODO provide poem here
+  } = await openai.generateLimerickImage(poem.join(" / "), {
+    context,
+  });
 
   const imageRet = await fetch(openaiUrl);
   // console.log(">> services.limerick.generateLimerick", { imageRet });
@@ -302,6 +286,9 @@ export async function generateLimerick(user: any, lang?: LanguageType, startingW
     bgColor: sortedColors[sortedColors.length - 1].brighten(0.5).hex(),
     colorPalette: sortedColors.map((c: any) => c.hex()),
     poem,
+    contextUrl,
+    contextPrompt,
+    context,
   } as Haiku;
 
   if (!user.isAdmin) {

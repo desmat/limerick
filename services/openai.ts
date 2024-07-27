@@ -251,18 +251,10 @@ export async function completeHaiku(poem: string[], language?: string, subject?:
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-export async function generateLimerick({ startingWith, language, previousPoems }: { startingWith?: string, language?: string, previousPoems?: any[] }): Promise<any> {
-  const prompt = `Starting with: ${startingWith}`;
+export async function generateLimerick({ startingWith, language, previousPoems, context }: { startingWith?: string, language?: string, previousPoems?: any[], context?: string }): Promise<any> {
+  const prompt = context
+    ? `Context: ${context}`
+    : `Starting with: ${startingWith}`;
 
   console.log(`>> services.openai.generateLimerick`, { language, prompt });
 
@@ -276,11 +268,11 @@ export async function generateLimerick({ startingWith, language, previousPoems }
         prompt,
         limerick: true // startingWith?.includes("DEBUG")
           ? [
-              "There was once a man from Kent,",
-              "Whose rod was so long it bent.",
-              "It scared all the fishes,",
-              "Fulfilled mermaid wishes,",
-              "And made quite the splash wherever he went!",
+            "There was once a man from Kent,",
+            "Whose rod was so long it bent.",
+            "It scared all the fishes,",
+            "Fulfilled mermaid wishes,",
+            "And made quite the splash wherever he went!",
           ] : sampleHaikus[Math.floor(Math.random() * sampleHaikus.length)].poem,
         // startingWith: subject || "test subject",
         // mood: mood || "test mood",
@@ -290,37 +282,37 @@ export async function generateLimerick({ startingWith, language, previousPoems }
   }
 
   const systemPrompt = `
-    Given the starting words or lines (/ to separate lines), if provided, please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
+    Given the ${context ? "provided context, " : "starting words or lines (/ to separate lines), if provided,"}
+    please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
     Make sure the limerick include innuendos.
     Other limerick poems may be provided, if so please ensure that this new limerick poem is different from the previous ones.
     Also include in the response, in fewest number of words, a title for this limeric. 
     Please only include keys "limerick" and "title".
     `;
 
-    const messages = [
-      {
-        role: 'system',
-        content: `
-          Given the starting words (if provided) please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
-          Make sure the limerick include innuendos.
-          Other limerick poems may be provided, if so please ensure that this new limerick poem is different from the previous ones.
-          Also include in the response, in fewest number of words, a title for this limeric. 
-          Please only include keys "limerick" and "title".
-        `  
-      },
-      ...((previousPoems || []).map((previousPoem: []) => {
-        return {
-          role: 'user',
-          content: `Other limerick poem: ${previousPoem.join("/")}`,
-        }
-      })),
-      {
+  const messages = [
+    {
+      role: 'system',
+      content: `
+        Given the starting words (if provided) please generate a limerick in ${language || "English"} and respond in JSON where each response is an array of strings.
+        Make sure the limerick include innuendos.
+        Other limerick poems may be provided, if so please ensure that this new limerick poem is different from the previous ones.
+        Also include in the response, in fewest number of words, a title for this limeric. 
+        Please only include keys "limerick" and "title".
+        `
+    },
+    ...((previousPoems || []).map((previousPoem: []) => {
+      return {
         role: 'user',
-        content: prompt,
+        content: `Other limerick poem: ${previousPoem.join("/")}`,
       }
-    ];
-    console.log(`>> services.openai.generateLimerick`, { messages });
-  
+    })),
+    {
+      role: 'user',
+      content: prompt,
+    }
+  ];
+  console.log(`>> services.openai.generateLimerick`, { messages });
 
   // @ts-ignore
   const completion = await openai.chat.completions.create({
@@ -344,10 +336,69 @@ export async function generateLimerick({ startingWith, language, previousPoems }
   }
 }
 
-export async function completeLimerick(poem: string[], language?: string, subject?: string, mood?: string, previousPoems?: any[]): Promise<any> {
+export async function generateContext({ language, text }: { language?: string, text?: string }): Promise<any> {
+  const prompt = `Text: ${text}`
+
+  console.log(`>> services.openai.generateContext`, { text, prompt });
+
+  if (process.env.OPENAI_API_KEY == "DEBUG") {
+    // for testing
+    console.warn(`>> services.openai.generateContext: DEBUG mode: returning dummy response`);
+    // await delay(13000);
+    return {
+      prompt: "DEBUG context prompt",
+      languageModel,
+      response: "DEBUG context",
+    };
+  }
+
+  const systemPrompt = `
+    Given the provide article's text please summarize, using a funny voice with lots of internet speak and emojis. 
+    Sure to use bullet points.
+    Respond only with the summary text.
+  `;
+
+  const messages = [
+    {
+      role: 'system',
+      content: systemPrompt
+    },
+    {
+      role: 'user',
+      content: prompt,
+    }
+  ];
+  console.log(`>> services.openai.generateContext`, { messages });
+
+  // @ts-ignore
+  const completion = await openai.chat.completions.create({
+    model: languageModel,
+    temperature: 1,
+    messages,
+  });
+
+  let response;
+  try {
+    // console.log(">> services.openai.generateContext RESULTS FROM API", completion);
+    response = completion.choices[0].message.content; //parseJson(completion.choices[0].message.content || "{}");
+    console.log(">> services.openai.generateContext RESULTS FROM API", { completion, response });
+    return {
+      prompt: systemPrompt,
+      languageModel,
+      response,
+    };
+  } catch (error) {
+    console.error("Error reading results", { error, response, completion });
+  }
+}
+
+export async function completeLimerick(poem: string[], language?: string, subject?: string, mood?: string, previousPoems?: any[], context?: string): Promise<any> {
   const prompt = `Limerick to complete: "${poem.join(" / ")}"
   ${subject ? `Topic: "${subject}"` : ""}
-  ${mood ? ` Mood: "${mood}"` : ""}`;
+  ${mood ? ` Mood: "${mood}"` : ""}
+  ${context ? ` Context: ${context}
+    ` : ""}
+  `;
 
   console.log(`>> services.openai.completeLimerick`, { poem, language, subject, mood, prompt, previousPoems });
 
@@ -370,7 +421,7 @@ export async function completeLimerick(poem: string[], language?: string, subjec
     {
       role: 'system',
       content: `
-        Given an incomplete limerick please complete the limerick. 
+        Given an incomplete limerick ${context ? "and provided context" : ""} please complete the limerick. 
         Characters "..." or "…" will be used to indicate a placeholder, please keep the existing word(s) and fill the rest.
         If a line looks like this: "<some one or more words> ..." then keep the word(s) at the beginning and fill the rest.
         If a line looks like this: "... <one or more words>" then keep the word(s) at the end and fill the rest.
@@ -433,12 +484,14 @@ export const ART_STYLES = [
   "funny and whimsical pastel sketch or drawing",
 ];
 
-export async function generateLimerickImage(limerick?: string, subject?: string, mood?: string, artStyle?: string): Promise<any> {
-  console.log(`>> services.openai.generateLimerickImage`, { limerick, subject, mood, artStyle });
+export async function generateLimerickImage(limerick: string, { artStyle, context }: { artStyle?: string, context?: string }): Promise<any> {
+  console.log(`>> services.openai.generateLimerickImage`, { limerick, artStyle });
 
   const selectedArtStyle = artStyle || ART_STYLES[Math.floor(Math.random() * ART_STYLES.length)];
   const prompt = `
-    Please read this limerick: ${limerick}
+    Please read this limerick: ${limerick}${context ? `,
+      and the context about the limerick: ${context}.
+      ` : ""}
     Respond with an image that would complement, hint at, and/or capture the essence that limerick.
     Make the art low-key with negative space in the middle, so that the limerick can be overlayed.
     THIS IS VERY IMPORTANT: the image SHOULD NOT contain ANY writing, letters, numbers or characters of any kind.
