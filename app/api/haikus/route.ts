@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
   let poem: string[] | undefined;
   let title: string | undefined;
   let imageFile: File | undefined;
+  let contextUrl: string | undefined;
 
   if (contentType && contentType.includes("multipart/form-data")) {
     const [formData, { user }] = await Promise.all([
@@ -138,7 +139,10 @@ export async function POST(request: NextRequest) {
     subject = data.request.subject;
     lang = data.request.lang;
     artStyle = data.request.artStyle;
-    if (subject && subject.indexOf("/") > -1) {
+    if (subject && (subject.startsWith("https://") || subject.startsWith("http://"))) {
+      contextUrl = subject;
+      subject = undefined;
+    } else if (subject && subject.indexOf("/") > -1) {
       const split = subject.split("/");
       subject = split[0];
       mood = split[1];
@@ -146,7 +150,7 @@ export async function POST(request: NextRequest) {
       poem = subject.split(/\n/).filter(Boolean)
       subject = undefined;
     }
-    console.log('>> app.api.haiku.POST', { lang, subject, mood, artStyle, poem });
+    console.log('>> app.api.haiku.POST', { lang, subject, mood, artStyle, poem, contextUrl });
   }
 
   const { user } = await userSession(request);
@@ -191,7 +195,7 @@ export async function POST(request: NextRequest) {
     haiku = await createHaiku(user, { theme: title, poem, imageBuffer, imageType });
   } else {
     // console.log('>> app.api.haiku.POST generating new haiku', { lang, subject, mood, artStyle });
-    haiku = await generateLimerick(user, lang, subject || poem && poem.join("/"));
+    haiku = await generateLimerick(user, lang, subject || poem && poem.join("/"), contextUrl);
 
   }
 

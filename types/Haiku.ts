@@ -8,6 +8,7 @@ export type Haiku = {
   updatedAt?: number,
   updatedBy?: string,
   status?: string,
+  context?: string,
 } | any;
 
 export type UserHaiku = {

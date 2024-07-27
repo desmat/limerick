@@ -133,7 +133,9 @@ export const limerickPromptSteps = (haiku: Haiku) => [
       <div style="display: flex; flex-direction: column; gap: 0.4rem;">
       <div>Title: <i>${haiku.title}</i></div>      
       <div>Theme: <i>${haiku.theme}</i></div>      
-      <div>Starting with: <i>${haiku.startingWith}</i></div>      
+      ${haiku.startingWith ? `<div>Starting with: <i>${haiku.startingWith}</i></div>` : ""} 
+      ${haiku.contextUrl ? `<div>Context URL: <i>${haiku.contextUrl}</i></div>` : ""} 
+      ${haiku.contextPrompt ? `<div>Context prompt: <i>${haiku.contextPrompt}</i></div>` : ""} 
       <div>Image instructions: <i>${haiku.artStyle || "N/A"}</i></div>      
       <div>Poem prompt: <i>${haiku.poemPrompt || "N/A"}</i></div>
       <div>Image prompt: <i>${haiku.imagePrompt || "N/A"}</i></div>
