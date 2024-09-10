@@ -231,9 +231,25 @@ export async function getDailyHaikudle(id?: string): Promise<DailyHaikudle | und
   return dailyHaikudle;
 }
 
+export async function getDailyHaikudleIds(query?: any): Promise<string[]> {
+  console.log(`>> services.haiku.getDailyHaikudleIds`, { query });
+  let dailyHaikudleIds = Array.from(await store.dailyHaikudles.ids(query))
+    .map((id: any) => `${id}`)
+    .filter((id: string) => id && id.match(/20\d{6}/))
+    .sort()
+    .reverse();
+
+  if (query?.count) {
+    dailyHaikudleIds = dailyHaikudleIds.splice(query?.offset || 0, query.count)
+  }
+
+  return dailyHaikudleIds;
+}
+
 export async function getDailyHaikudles(query?: any): Promise<DailyHaikudle[]> {
-  const dailyHaikudles = (await store.dailyHaikudles.find(query))
-    .filter(Boolean);
+  console.log(`>> services.haiku.getDailyHaikudles`, { query });
+  const dailyHaikudleDateCodes = await getDailyHaikudleIds(query);
+  const dailyHaikudles = await store.dailyHaikudles.find({ id: dailyHaikudleDateCodes })
   const dailyHaikudleIds = dailyHaikudles
     .map((dailyHaikudle: DailyHaikudle) => dailyHaikudle.haikuId);
 
@@ -242,7 +258,7 @@ export async function getDailyHaikudles(query?: any): Promise<DailyHaikudle[]> {
   // saving them with the daily haikudle record  
   const haikus = await store.haikus.find({ id: dailyHaikudleIds });
   const themeLookup = new Map(haikus
-    .map((haiku: Haiku) => [haiku.id, haiku.theme]));
+    .map((haiku: Haiku) => [haiku.id, haiku.title || haiku.theme]));
 
   // @ts-ignore
   return dailyHaikudles
@@ -255,6 +271,7 @@ export async function getDailyHaikudles(query?: any): Promise<DailyHaikudle[]> {
         }
       }
     })
+    .filter(Boolean)
     .sort((a: any, b: any) => a.id - b.id);
 }
 

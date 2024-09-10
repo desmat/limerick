@@ -3,9 +3,10 @@ import { createToken, loadUser, saveUser, userSession } from '@/services/users';
 import { userUsage } from '@/services/usage';
 import { getDailyHaikus, getNextDailyHaikuId, getUserHaikus } from '@/services/haikus';
 import { getDailyHaikudles, getNextDailyHaikudleId } from '@/services/haikudles';
-import { uuid } from '@/utils/misc';
+import { searchParamsToMap, uuid } from '@/utils/misc';
 
 export async function GET(request: NextRequest, params?: any) {
+  const query = searchParamsToMap(request.nextUrl.searchParams.toString()) as any;
   const { user: sessionUser } = await userSession(request);
   console.log('>> app.api.user.GET', { sessionUser });
 
@@ -31,10 +32,13 @@ export async function GET(request: NextRequest, params?: any) {
     ...databaseUser,
   };
 
+  const count = Number(query.count) || undefined;
+  const offset = Number(query.offset) || undefined;
+
   let userHaikus = {
     haikus: user.isAdmin
       ? [] // don't need to pull the admin's haikus because we pull all of them later
-      : await getUserHaikus(user),
+      : await getUserHaikus(user, { count, offset }),
   } as any;
 
   if (user.isAdmin) {
@@ -43,9 +47,9 @@ export async function GET(request: NextRequest, params?: any) {
       dailyHaikus,
       dailyHaikudles,
     ] = await Promise.all([
-      getUserHaikus(user, true),
-      getDailyHaikus(),
-      getDailyHaikudles(),
+      getUserHaikus(user, { all: true, count, offset }),
+      getDailyHaikus({ count, offset }),
+      getDailyHaikudles({ count, offset }),
     ]);
 
     const [

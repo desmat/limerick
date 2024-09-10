@@ -26,7 +26,7 @@ import(`@/services/stores/${process.env.STORE_TYPE}`)
 
 export async function getHaikus(query?: any, hashPoem?: boolean): Promise<Haiku[]> {
   console.log(">> services.haikus.getHaikus", { query, hashPoem })
-  let haikus = (await store.haikus.find(query))
+  let haikus = (await store.haikus.find({ ...query, count: 100 }))
     .filter((haiku: Haiku) => haiku && !haiku.deprecated && !haiku.deprecatedAt);
   // note that we started with .deprecated but moved to .deprecatedAt
 
@@ -50,26 +50,52 @@ export async function getHaikus(query?: any, hashPoem?: boolean): Promise<Haiku[
   return new Promise((resolve, reject) => resolve(haikus));
 }
 
-export async function getUserHaikus(user: User, all?: boolean): Promise<Haiku[]> {
-  console.log(`>> services.haiku.getUserHaikus`, { user });
+export async function getHaikuIds(query?: any): Promise<Set<any>> {
+  console.log(">> services.haikus.getHaikuIds", { query });
+  return store.haikus.ids(query);
+}
+
+export async function getUserHaikus(user: User, {
+  all,
+  albumId,
+  count,
+  offset,
+}: {
+  all?: boolean,
+  albumId?: string,
+  count?: number,
+  offset?: number
+}): Promise<Haiku[]> {
+  console.log(`>> services.haiku.getUserHaikus`, { user, all, albumId, count, offset });
 
   let haikus;
 
   if (all) {
     // for admins: get all haikus
-    haikus = (await store.haikus.find())
+    haikus = (await store.haikus.find({ count: count || 100, offset }))
       .filter((haiku: Haiku) => haiku && !haiku.deprecated && !haiku.deprecatedAt);
   } else {
     // find all haikus that user solved corresponding haikudle
-    const [generatedHaikus, userHaikus, userHaikudles] = await Promise.all([
+    const [
+      generatedHaikus,
+      userHaikus,
+      userHaikudles
+    ] = await Promise.all([
       store.haikus.find({
-        createdBy: user.id
+        user: user.id,
+        count,
+        offset,
       }),
+      // @ts-ignore
       store.userHaikus.find({
-        createdBy: user.id,
+        user: user.id,
+        count,
+        offset,
       }),
       store.userHaikudles.find({
-        createdBy: user.id,
+        user: user.id,
+        count,
+        offset,
         // solved: true, // nope, need to filter on haikudle.solved and can't do that
       }),
     ]);
@@ -647,10 +673,10 @@ export async function getDailyHaiku(id?: string): Promise<DailyHaiku | undefined
   if (!dailyHaiku) {
     // find previous daily haiku
     const previousDailyHaikus = (await getDailyHaikus())
-    .filter((dh: DailyHaiku) => id && dh.id < id)
-    .sort(byIdDesc);
+      .filter((dh: DailyHaiku) => id && dh.id < id)
+      .sort(byIdDesc);
     // console.log(`>> services.haiku.getDailyHaiku`, { previousDailyHaikus });
-    
+
     dailyHaiku = previousDailyHaikus[0];
   }
 
@@ -658,8 +684,18 @@ export async function getDailyHaiku(id?: string): Promise<DailyHaiku | undefined
 }
 
 export async function getDailyHaikus(query?: any): Promise<DailyHaiku[]> {
-  const dailyHaikus = (await store.dailyHaikus.find(query))
-    .filter(Boolean);
+  console.log(`>> services.haiku.getDailyHaikus`, { query });
+  let allDailyHaikuIds = Array.from(await store.dailyHaikus.ids())
+    .map((id: any) => `${id}`)
+    .filter((id: string) => id && id.match(/20\d{6}/))
+    .sort()
+    .reverse();
+
+  if (query?.count) {
+    allDailyHaikuIds = allDailyHaikuIds.splice(query?.offset || 0, query.count)
+  }
+
+  const dailyHaikus = await store.dailyHaikus.find({ id: allDailyHaikuIds });
   const dailyHaikuIds = dailyHaikus
     .map((dailyHaiku: DailyHaiku) => dailyHaiku.haikuId);
 
