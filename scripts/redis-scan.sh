@@ -14,17 +14,29 @@
 #     redis-cli --scan --pattern '*'
 #
 
-if [ "$#" -lt 2 ]
-then
-  echo "Scan keys in Redis matching a pattern using SCAN (safe version of KEYS)"
-  echo "Usage: $0 <host> [port] [database] [pattern]"
-  exit 1
-fi
+# if [ "$#" -lt 2 ]
+# then
+#   echo "Scan keys in Redis matching a pattern using SCAN (safe version of KEYS)"
+#   echo "Usage: $0 <host> [port] [database] [pattern]"
+#   exit 1
+# fi
+
 # host=${1:-}
 # port=${2:-6379}
 # database=${3:-0}
-connection=${1:-\*}
-pattern=${2:-\*}
+# connection=${1:-\*}
+
+# limerick
+# connection="redis://default:AckXAAIncDEzZGViZDU3MWQ0YmY0ZjE5OGRmMjdhYmJkYWFiNDY4OXAxNTE0Nzk@casual-dodo-51479.upstash.io:6379"
+
+# haiku3 prod
+connection="redis://default:Acz2AAIncDFmZjY4MWE5NzA4Njk0MGViYjE4NTExODJlYjRhZmRjOXAxNTI0NzA@meet-sheepdog-52470.upstash.io:6379"
+
+# haiku2
+# connection="redis://default:Aaq9AAIncDFmOTMxZTRlMTUwZGU0OGM0YWIyZTNjMTQ0OGVjNTVjOXAxNDM3MDk@quiet-coral-43709.upstash.io:6379"
+
+# pattern=${2:-\*}
+pattern="userhaiku2:*"
 cursor=-1
 keys=""
 
@@ -37,6 +49,7 @@ while [[ "$cursor" -ne 0 ]]; do
 
   # reply=$(redis-cli -h "$host" -p "$port" -n "$database" SCAN "$cursor" MATCH "$pattern")
   reply=$(redis-cli --tls --no-auth-warning -u "$connection" SCAN "$cursor" MATCH "$pattern" COUNT "1000")
+  echo "reply: $reply"
 
   cursor=$(expr "$reply" : '\([0-9]*[0-9 ]\)')
   keys=${reply//$cursor/}
@@ -70,7 +83,8 @@ while [[ "$cursor" -ne 0 ]]; do
           if [ -n "$createdAt" ]; then
             createdAtSeconds=$(($createdAt / 1000))
             createdAtDate=$(date -r $createdAtSeconds)
-            echo "${keyArray[$i]} $createdAtDate" 
+            # echo "${keyArray[$i]} $createdAtDate" 
+            echo ${keyArray[$i]}
           fi
         done
   fi
