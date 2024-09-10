@@ -130,7 +130,7 @@ class RedisStore<T extends RedisStoreEntry> implements GenericStore<T> {
     // console.log(`>> services.stores.redis.RedisStore<${this.key}>.find`, { keys });
 
     // don't mget too many at once otherwise 💥
-    const blockSize = 512;
+    const blockSize = 128;
     const blocks = keys && keys.length && Array
       .apply(null, Array(Math.ceil(keys.length / blockSize)))
       .map((v: any, block: number) => (keys || [])
