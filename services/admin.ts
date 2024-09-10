@@ -15,14 +15,26 @@ import(`@/services/stores/${process.env.STORE_TYPE}`)
     store = new s.create();
   });
 
-export async function backup(user: User) {
-  console.log('>> app.services.admin.backup', { user });
+// TODO stats function that uses redis .keys and returns just counts of entities
+
+export async function backup(user: User, entities?: string[], limerickIds?: string[] | null) {
+  console.log('>> app.services.admin.backup', { user, entities, limerickIds });
 
   const keys = Object.keys(store)
-    // .filter((key: string) => key == "haikus"); //testing
+    .filter((key: string) => {
+      return entities?.length
+        ? entities.includes(key)
+        : limerickIds?.length
+          ? key == "haikus"
+          : true
+    });
+
+  if (!keys) throw 'No entities to backup';
+
+  // TODO maybe do in chucks
   const values = await Promise.all(
-    Object.values(store)
-      .map((v: any) => v.find())
+    // @ts-ignore
+    keys.map((key: string) => store[key].find(limerickIds?.length ? { id: limerickIds } : undefined))
   );
 
   // @ts-ignore
@@ -57,7 +69,7 @@ export async function backup(user: User) {
   );
 
   console.log('>> app.services.admin.backup', { keyValues });
-// return keyValues;
+  // return keyValues;
 
   const p = require('/package.json');
   const filename = `backups/${p.name}_${p.version}_${moment().format("YYYYMMDD_kkmmss")}.json`;
@@ -93,11 +105,18 @@ export async function restore(user: User, url: string) {
         return;
       }
 
-      const options = key == "userHaikus" ? UserHaikuSaveOptions : {};
+      // const options = key == "userHaikus" ? UserHaikuSaveOptions : {};
       return await Promise.all(
         values.map(async (value: any) => {
           // @ts-ignore
           const record = await store[key].get(value.id);
+          const options = value.deprecated || value.deprecatedAt
+            ? {
+              noIndex: true,
+              noLookup: true,
+            }
+            : {};
+
           if (record) {
             // for now don't restore if already exists
             result[`${key}_skipped`] = (result[`${key}_skipped`] || 0) + 1;

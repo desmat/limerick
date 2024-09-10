@@ -20,6 +20,7 @@ import { LanguageType } from '@/types/Languages';
 import { defaultPresetLayout, defaultSocialImgPresetLayout, presetLayouts, socialImgPresetLayouts } from '@/types/Layout';
 import { haikuGeneratedOnboardingSteps, haikuMultiLanguageSteps, haikuOnboardingSteps, haikuPromptSteps, haikudleGotoHaikuGenius, haikudleOnboardingSteps, notShowcase_notOnboardedFirstTime_onboardedShowcase, showcase_notOnboardedFirstTime, showcase_onboardedFirstTime, showcase_onboardedFirstTime_admin, limerickPromptSteps } from '@/types/Onboarding';
 import { User } from '@/types/User';
+import { upperCaseFirstLetter } from '@/utils/format';
 import HaikudlePage from './HaikudlePage';
 import { formatHaikuText } from './HaikuPoem';
 
@@ -584,18 +585,46 @@ export default function MainPage({
     );
   }
 
-  const startBackup = async () => {
-    // console.log('>> app._components.MainPage.startBackup()', {});
+  const startBackup = async (type: 'backup' | 'backupHaiku' | 'restore' = 'backup') => {
+    console.log('>> app._components.MainPage.startBackup()', { type });
 
     const token = await getUserToken();
-    setBackupInProgress(true);
-    // const filename = prompt("File url to restore?");
-    // if (!filename) return;
-    // const res = await fetch(`/api/admin/restore?filename=${filename}`, {
-    const res = await fetch("/api/admin/backup", {
-      headers: { Authorization: `Bearer ${token}` },
-      method: "POST",
-    });
+    let res;
+
+    if (type == 'backup') {
+      const entities = prompt(
+        "Entit(y|ies) to backup? (comma or space-separated names, or empty for all)",
+        "haikus, dailyHaikus, likedHaikus, haikudles, dailyHaikudles, userHaikudles, user"
+      );
+      if (typeof (entities) != "string") return;
+
+      setBackupInProgress(true);
+      res = await fetch(`/api/admin/backup?entity=${entities.split(/\W+/).join(",")}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        method: "POST",
+      });
+    } else if (type == 'backupHaiku') {
+      const id = prompt("Limerick(s) to backup? (comma or space-separated ids)", haikuId);
+      if (!id) return;
+
+      setBackupInProgress(true);
+      // const res = await fetch(`/api/admin/restore?filename=${filename}`, {
+      res = await fetch(`/api/admin/backup?limerick=${id.split(/\W+/).join(",")}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        method: "POST",
+      });
+    } else if (type == 'restore') {
+      const filename = prompt("File url to restore?");
+      if (!filename) return;
+
+      setBackupInProgress(true);
+      res = await fetch(`/api/admin/restore?filename=${filename}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        method: "POST",
+      });
+    } else {
+      throw `unknown type '${type}'`;
+    }
 
     setBackupInProgress(false);
 
@@ -606,7 +635,7 @@ export default function MainPage({
     }
 
     const data = await res.json();
-    plainAlert(`Backup successful: ${JSON.stringify(data)}`, {
+    plainAlert(`${upperCaseFirstLetter(type)}Successful: ${JSON.stringify(data)}`, {
       // closeDelay: 3000
     });
   }
