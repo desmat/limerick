@@ -11,6 +11,13 @@ export type Haiku = {
   context?: string,
 } | any;
 
+export const HaikuSaveOptions = {
+  lookups: {
+    lang: "lang",
+    user: "createdBy",
+  },
+};
+
 export type UserHaiku = {
   id: string,
   userId: string,
@@ -43,6 +50,12 @@ export type DailyHaiku = {
   updatedAt?: number,
   updatedBy?: string,
   theme?: string, // ???
+};
+
+export const DailyHaikuSaveOptions = {
+  lookups: {
+    haiku: "haikuId",
+  },
 };
 
 export type HaikuAction = string;
