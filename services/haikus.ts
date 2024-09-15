@@ -252,7 +252,7 @@ export async function createHaiku(user: User, {
   const haikuId = uuid();
 
   if (!debug && imageBuffer) {
-    const filename = `haiku-${haikuId}-${theme?.replaceAll(/\W/g, "_").toLowerCase()}.png`;
+    const filename = `limerick-${haikuId}-${theme?.replaceAll(/\W/g, "_").toLowerCase()}.png`;
     const blob = !debug && await put(filename, imageBuffer, {
       access: 'public',
       addRandomSuffix: false,
