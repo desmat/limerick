@@ -100,9 +100,9 @@ export default async function Layout({
         // isHaikudleMode
           // ? `https://iwpybzbnjyjnfzli.public.blob.vercel-storage.com/social_img_haikudle/${haikuId}.png`
           // : 
-          `https://iwpybzbnjyjnfzli.public.blob.vercel-storage.com/social_img_limericks/${haikuId}_${version}.png`
-          // `https://iwpybzbnjyjnfzli.public.blob.vercel-storage.com/social_img_limericks/${haikuId}.png`,
-          // ...metaImages,
+          `https://iwpybzbnjyjnfzli.public.blob.vercel-storage.com/social_img_limericks/${haikuId}.png`,
+          `https://iwpybzbnjyjnfzli.public.blob.vercel-storage.com/social_img_limericks/${haikuId}_${version}.png`,
+          ...metaImages,
       ]
     }
   }
