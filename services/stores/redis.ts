@@ -318,13 +318,13 @@ class RedisStore<T extends RedisStoreEntry> implements GenericStore<T> {
 
 export function create(): Store {
   return {
-    haikus: new RedisStore<Haiku>("test2limerick", undefined, HaikuSaveOptions),
-    dailyHaikus: new RedisStore<DailyHaiku>("test2dailylimerick", undefined, DailyHaikuSaveOptions),
-    haikudles: new RedisStore<Haikudle>("test2limerickdle", undefined, HaikudleSaveOptions),
-    dailyHaikudles: new RedisStore<DailyHaikudle>("test2dailylimerickle", undefined, DailyHaikudleSaveOptions),
-    userHaikudles: new RedisStore<UserHaikudle>("test2userlimerickle", undefined, UserHaikudleSaveOptions),
-    userHaikus: new RedisStore<UserHaiku>("test2userlimerick", undefined, UserHaikuSaveOptions),
-    userUsage: new RedisStore<UserUsage>("test2limerickuserusage"),
-    user: new RedisStore<User>("test2limerickuser"),
+    haikus: new RedisStore<Haiku>("limerick", undefined, HaikuSaveOptions),
+    dailyHaikus: new RedisStore<DailyHaiku>("dailylimerick", undefined, DailyHaikuSaveOptions),
+    haikudles: new RedisStore<Haikudle>("limerickdle", undefined, HaikudleSaveOptions),
+    dailyHaikudles: new RedisStore<DailyHaikudle>("dailylimerickle", undefined, DailyHaikudleSaveOptions),
+    userHaikudles: new RedisStore<UserHaikudle>("userlimerickle", undefined, UserHaikudleSaveOptions),
+    userHaikus: new RedisStore<UserHaiku>("userlimerick", undefined, UserHaikuSaveOptions),
+    userUsage: new RedisStore<UserUsage>("limerickuserusage"),
+    user: new RedisStore<User>("limerickuser"),
   }
 }
