@@ -303,7 +303,7 @@ export default function SidePanel({
                   }
                   {!user?.isAdmin &&
                     <StyledLayers styles={styles}>
-                      "Your Limericks"
+                      Your Limericks
                     </StyledLayers>
                   }
                   {/* <StyledLayers styles={styles.slice(0, 1)} className="my-auto">
