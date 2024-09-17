@@ -193,7 +193,7 @@ export const haikudleOnboardingSteps = [
     focus: "side-panel-and-bottom-links",
     message: `
       <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-        <div>Find all your haikus (solved or created) in the side panel to the left.</div>
+        <div>Find all your limericks (solved or created) in the side panel to the left.</div>
         <div>To show this message again, learn more about me or get a link to share this haiku see the buttons at the bottom of the screen.</div>
         <div>Enjoy <b>Haikudle!</b></div>        
       </div>
