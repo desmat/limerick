@@ -193,12 +193,12 @@ export async function regenerateLimerickImage(user: any, haiku: Haiku, artStyle?
 
   const savedHaiku = await saveHaiku(user, updatedHaiku);
 
-  if (await triggerLimerickShared(savedHaiku)) {
-    haiku = await saveHaiku(user, {
-      ...savedHaiku,
-      shared: true,
-    }, { noVersion: true });
-  }
+  // if (await triggerLimerickShared(savedHaiku)) {
+  //   haiku = await saveHaiku(user, {
+  //     ...savedHaiku,
+  //     shared: true,
+  //   }, { noVersion: true });
+  // }
 
   return savedHaiku;
 }
@@ -297,12 +297,12 @@ export async function generateLimerick(user: any, lang?: LanguageType, startingW
 
   const createdHaiku = await store.haikus.create(user.id, haiku);
 
-  if (await triggerLimerickShared(createdHaiku)) {
-    haiku = await saveHaiku(user, {
-      ...createdHaiku,
-      shared: true,
-    }, { noVersion: true });
-  }
+  // if (await triggerLimerickShared(createdHaiku)) {
+  //   haiku = await saveHaiku(user, {
+  //     ...createdHaiku,
+  //     shared: true,
+  //   }, { noVersion: true });
+  // }
 
   return createdHaiku;
 }
