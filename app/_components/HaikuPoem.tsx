@@ -112,8 +112,10 @@ export default function HaikuPoem({
 
   const loopAnimation = false;
   const animationSteps = haiku?.poem
-    ? haiku.poem.length
-    : 0;
+    ? haiku.poem.length == 5
+      ? [2500, 1250, 1250, 750, 750]
+      : haiku.poem.map(() => 1000)
+    : [];
   const [animating, setAnimating] = useState(true);
   let [animationStep, setAnimationStep] = useState(0);
 
@@ -481,28 +483,28 @@ export default function HaikuPoem({
 
   useEffect(() => {
     // console.log(">> app._component.SidePanel.useEffect", { animationStep });
-    let animationInterval: any;
+    let animationTimeout: any;
 
     if (animating) {
-      animationInterval = setInterval(
+      animationTimeout = setTimeout(
         () => {
           // console.log(">> app._component.SidePanel.useEffect", { animationStep });
           if (loopAnimation) {
-            animationStep = animationStep >= animationSteps ? 0 : animationStep + 1;
+            animationStep = animationStep >= animationSteps.length ? 0 : animationStep + 1;
             setAnimationStep(animationStep);
-          } else if (animationStep >= animationSteps) {
+          } else if (animationStep >= animationSteps.length) {
             setAnimating(false);
           } else {
-            animationStep = animationStep >= animationSteps ? 0 : animationStep + 1;
+            animationStep = animationStep >= animationSteps.length ? 0 : animationStep + 1;
             setAnimationStep(animationStep);
           }
-        },
-        1000
+        }, 
+        animationSteps[animationStep]
       );
     }
 
-    return () => animationInterval && clearInterval(animationInterval);
-  }, [animating]);
+    return () => animationTimeout && clearTimeout(animationTimeout);
+  }, [animating, animationStep]);
 
   // console.log(">> app._component.SidePanel.useEffect", { currentPoem, editPoem, displayPoem, lastPoem });
 
