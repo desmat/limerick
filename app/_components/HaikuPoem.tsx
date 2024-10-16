@@ -11,6 +11,7 @@ import { defaultPresetLayout, presetLayouts } from "@/types/Layout";
 import { USAGE_LIMIT } from "@/types/Usage";
 import { User } from "@/types/User";
 import { capitalize, upperCaseFirstLetter } from "@/utils/format";
+import delay from "@/utils/delay";
 import trackEvent from "@/utils/trackEvent";
 import PopOnClick from "./PopOnClick";
 import { StyledLayers } from "./StyledLayers";
@@ -111,13 +112,10 @@ export default function HaikuPoem({
   let [firstWordPointerEnter, setFirstWordPointerEnter] = useState<number[]>();
 
   const loopAnimation = false;
-  const animationSteps = haiku?.poem
-    ? haiku.poem.length == 5
-      ? [2500, 1250, 1250, 750, 750]
-      : haiku.poem.map(() => 1000)
-    : [];
+  const animationStepPauses = [2000, 100, 100, 50, 50, 2000]; // first step is blank, last is pause at end
   const [animating, setAnimating] = useState(true);
   let [animationStep, setAnimationStep] = useState(0);
+  let [animationWord, setAnimationWord] = useState(0);
 
   const handleLongPressHaiku = (e: any) => {
     // console.log('>> app._components.HaikuPoem.handleLongPressHaiku()', { mode, haikuId: haiku?.id, status: haiku?.status, popPoem, haiku });
@@ -483,28 +481,44 @@ export default function HaikuPoem({
 
   useEffect(() => {
     // console.log(">> app._component.SidePanel.useEffect", { animationStep });
+
     let animationTimeout: any;
 
     if (animating) {
-      animationTimeout = setTimeout(
-        () => {
-          // console.log(">> app._component.SidePanel.useEffect", { animationStep });
-          if (loopAnimation) {
-            animationStep = animationStep >= animationSteps.length ? 0 : animationStep + 1;
-            setAnimationStep(animationStep);
-          } else if (animationStep >= animationSteps.length) {
-            setAnimating(false);
-          } else {
-            animationStep = animationStep >= animationSteps.length ? 0 : animationStep + 1;
-            setAnimationStep(animationStep);
+      const animateWords = async (line: number) => {
+        // console.log(">> app._component.SidePanel.useEffect animateWords", { line });
+        if (line < haiku.poem.length) {
+          for (let i = 0; i < haiku.poem[line].length; i++) {
+            animationWord = i;
+            setAnimationWord(animationWord);
+            if (i == (haiku.poem[line].length - 1)) {
+              await delay(0);
+            } else {
+              await delay(50);
+            }
           }
-        }, 
-        animationSteps[animationStep]
-      );
+        }
+      }
+  
+      const animateSteps = async () => {     
+        for (let i = 0; i < (haiku.poem.length + 1); i++) {
+          // console.log(">> app._component.SidePanel.useEffect animationStep loop", { i, pause: animationStepPause[i] });
+          animationStep = i;
+          setAnimationStep(animationStep);
+          if (animationStep > 0) await animateWords(animationStep - 1);
+          await delay(animationStepPauses[i]);
+        }
+
+        animationTimeout = loopAnimation && setTimeout(animateSteps, 0);
+      }
+
+      animationTimeout = setTimeout(animateSteps, 0);
     }
 
-    return () => animationTimeout && clearTimeout(animationTimeout);
-  }, [animating, animationStep]);
+    return () => {
+      animationTimeout && clearTimeout(animationTimeout);
+    }
+  }, [animating]);
 
   // console.log(">> app._component.SidePanel.useEffect", { currentPoem, editPoem, displayPoem, lastPoem });
 
@@ -643,7 +657,6 @@ export default function HaikuPoem({
                                     msUserSelect: "none",
                                     WebkitTapHighlightColor: "rgba(0,0,0,0)",
                                     justifyContent: layout?.alignments[i] || "start",
-                                    visibility: !animating || i < animationStep ? "visible" : "hidden",
                                   }}
                                 // onMouseLeave={(e: any) => handleMouseLeaveLine(e, i)}
                                 >
@@ -664,6 +677,9 @@ export default function HaikuPoem({
                                         }`}
                                       style={{
                                         transition: "opacity 0.5s ease-out",
+                                        visibility: animating && (i == (animationStep - 1) && j >= animationWord || i >= animationStep)
+                                        ? "hidden"
+                                        : "visible"
                                       }}
                                       onMouseDown={(e: any) => handleMouseDownWord(e, i, j)}
                                       onTouchStart={(e: any) => handleMouseDownWord(e, i, j)}
@@ -697,7 +713,7 @@ export default function HaikuPoem({
                             </StyledLayers>
                           </div>
                         }
-                        {!spacer && i == currentPoem.length - 1 && !showcaseMode && (copyAllowed || regeneratePoemAllowed || editAllowed) && (!animating || animationStep >= animationSteps) &&
+                        {!spacer && i == currentPoem.length - 1 && !showcaseMode && (copyAllowed || regeneratePoemAllowed || editAllowed) && (!animating || animationStep >= haiku.poem.length) &&
                           <div className="flex flex-grow-0 justify-end relative h-0">
                             <div className="absolute top-0 right-0 z-40"
                               onMouseDown={(e: any) => {
