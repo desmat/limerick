@@ -112,7 +112,7 @@ export default function HaikuPoem({
   let [firstWordPointerEnter, setFirstWordPointerEnter] = useState<number[]>();
 
   const loopAnimation = false;
-  const animationStepPauses = [2000, 100, 100, 50, 50, 2000]; // first step is blank, last is pause at end
+  const animationStepPauses = [2000, 5, 5, 0, 0, 2000]; // first step is blank, last is pause at end
   const [animating, setAnimating] = useState(true);
   let [animationStep, setAnimationStep] = useState(0);
   let [animationWord, setAnimationWord] = useState(0);
