@@ -671,13 +671,17 @@ export async function getDailyHaiku(id?: string): Promise<DailyHaiku | undefined
   console.log(`>> services.haiku.getDailyHaiku`, { id, dailyHaiku });
 
   if (!dailyHaiku) {
-    // find previous daily haiku
-    const previousDailyHaikus = (await getDailyHaikus())
-      .filter((dh: DailyHaiku) => id && dh.id < id)
-      .sort(byIdDesc);
-    // console.log(`>> services.haiku.getDailyHaiku`, { previousDailyHaikus });
+    // // find previous daily haiku
+    // const previousDailyHaikus = (await getDailyHaikus())
+    //   .filter((dh: DailyHaiku) => id && dh.id < id)
+    //   .sort(byIdDesc);
+    // dailyHaiku = previousDailyHaikus[0];
 
-    dailyHaiku = previousDailyHaikus[0];
+    // find random previous daily haiku
+    const previousDailyHaikus = (await getDailyHaikus())
+    dailyHaiku = previousDailyHaikus[Math.floor(Math.random() * previousDailyHaikus.length)];
+
+    // console.log(`>> services.haiku.getDailyHaiku`, { previousDailyHaikus });
   }
 
   return new Promise((resolve, reject) => resolve(dailyHaiku));
